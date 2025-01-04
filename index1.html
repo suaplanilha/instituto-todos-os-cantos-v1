@@ -1,25 +1,36 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Embedded Content</title>
+  <title>Controle de Alunos</title>
 </head>
 <body>
-  <iframe 
-    src="https://script.google.com/macros/s/AKfycbwk9L_GDE0bZtjRxWOntqGIk9Lh2qjERPXa5Fk1f_qzkoXprlB1sOc0-13YIkCfTCs9/exec"
-    width="100%"
-    height="100%"
-    allowfullscreen="true"
-    style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; border: none;">
-  </iframe>
-
+  <!-- Botão para abrir o conteúdo em uma nova aba -->
+  <button onclick="openInNewTab()">Abrir Conteúdo em Nova Aba</button>
+  
+  <!-- Botão para ativar o modo de tela cheia -->
+  <button onclick="goFullscreen()">Ativar Tela Cheia</button>
+  
   <script>
-    window.onload = function() {
-      document.querySelector('iframe')
-        .requestFullscreen()
-        .catch((err) => {
-          console.error('Error attempting to enable full-screen mode:', err.message);
-        });
-    };
+    // Função para abrir o conteúdo em uma nova aba
+    function openInNewTab() {
+      window.open('https://script.google.com/macros/s/AKfycbwTXQ5QfKv-Gg-OYuwW8knF8E_x_j9ArKGmNC4R-NISNiyWZQbrSBDBbmUCVOfA3zNw/exec', '_blank');
+    }
+
+    // Função para ativar o modo de tela cheia
+    function goFullscreen() {
+      var iframe = document.querySelector('iframe');
+      if (iframe.requestFullscreen) {
+        iframe.requestFullscreen();
+      } else if (iframe.mozRequestFullScreen) { // Firefox
+        iframe.mozRequestFullScreen();
+      } else if (iframe.webkitRequestFullscreen) { // Chrome, Safari, Opera
+        iframe.webkitRequestFullscreen();
+      } else if (iframe.msRequestFullscreen) { // IE/Edge
+        iframe.msRequestFullscreen();
+      } else {
+        console.error("Tela cheia não suportada no seu navegador.");
+      }
+    }
   </script>
 </body>
 </html>
