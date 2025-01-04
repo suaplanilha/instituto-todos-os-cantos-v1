@@ -1,0 +1,146 @@
+<!-- Importar jQuery e DataTables -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.7/jquery.inputmask.min.js"></script>
+
+<!-- Outros Scripts -->
+<script src="https://apis.google.com/js/api.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<!-- Chart.js e seus Plugins -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+
+<!-- Evite incluir Chart.js novamente -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> --> <!-- Remova esta linha -->
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css">
+
+<script>
+    // Registrar o plugin ChartDataLabels
+    Chart.register(ChartDataLabels);
+    
+    $(document).ready(function() {
+        // ... restante do código
+    });
+</script>
+
+<script>
+
+
+  function getURLParameters() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const width = urlParams.get('width');
+    const height = urlParams.get('height');
+
+    // Ajusta o tamanho da página conforme os parâmetros da URL
+    if (width && height) {
+      document.body.style.width = width;
+      document.body.style.height = height;
+    }
+  }
+
+  // Executa a função quando a página carrega
+  window.onload = function() {
+    getURLParameters();
+  };
+
+
+
+  /**
+   * Função para carregar as subpáginas dinamicamente
+   * @param {Event} event - Evento de clique
+   * @param {string} page - Nome da página a ser carregada
+   */
+  window.loadPage = function(event, page) {
+    event.preventDefault(); // Previne o comportamento padrão do link
+
+    var content = document.getElementById('content');
+    content.innerHTML = '<div class="loading-spinner"></div>'; // Feedback visual de carregamento
+
+    google.script.run.withSuccessHandler(function(html) {
+      // Remover o spinner e inserir o conteúdo
+      content.innerHTML = html;
+
+      // Executar scripts incluídos na subpágina
+      var scripts = content.getElementsByTagName('script');
+      for (var i = 0; i < scripts.length; i++) {
+        eval(scripts[i].innerHTML);
+      }
+
+    }).withFailureHandler(function(error) {
+      console.error('Erro ao carregar a página: ', error);
+      content.innerHTML = '<p>Erro ao carregar a página.</p>';
+    }).include(page);
+  };
+
+  // No script.html
+function fecharModal() {
+  $('.modal').hide();
+
+  if ($('#formCadastro').length) {
+    $('#formCadastro')[0].reset();
+  }
+
+  if ($('#formEditarCadastro').length) {
+    $('#formEditarCadastro')[0].reset();
+  }
+
+  $('#mensagemSucesso').hide();
+}
+
+
+// Função para alternar o menu lateral
+document.addEventListener('DOMContentLoaded', function () {
+    var openBtn = document.getElementById('open_btn');
+    if (openBtn) {
+        openBtn.addEventListener('click', function () {
+            document.getElementById('sidebar').classList.toggle('open-sidebar');
+            console.log('Menu lateral alternado.');
+        });
+    } else {
+        console.warn('Botão open_btn não encontrado no DOM.');
+    }
+});
+
+
+function toggleSubmenu(element) {
+    const parentItem = element.parentElement; // O item de menu que foi clicado
+    const submenu = parentItem.querySelector('.submenu'); // O submenu dentro deste item
+
+    if (submenu) {
+        // Fechar todos os outros submenus
+        const allItems = document.querySelectorAll('.side-item');
+        allItems.forEach(item => {
+            if (item !== parentItem) {
+                item.classList.remove('open');
+            }
+        });
+
+        // Alternar a classe 'open' para exibir/ocultar o submenu clicado
+        parentItem.classList.toggle('open');
+    }
+}
+  // Estilos para o spinner de carregamento
+  var style = document.createElement('style');
+  style.innerHTML = `
+    .loading-spinner {
+      border: 8px solid #f3f3f3;
+      border-top: 8px solid #3498db;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 100px auto;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  `;
+  document.head.appendChild(style);
+</script>

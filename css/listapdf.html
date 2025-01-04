@@ -1,0 +1,654 @@
+<style>
+
+
+
+
+    /* CSS Exclusivo para Lista de Presença */
+    body {
+        font-family: Arial, sans-serif;
+    }
+
+    .lista-presenca-container {
+       
+    }
+
+    .header {
+        text-align: center;
+        // margin-bottom: 20px;
+    }
+
+.lista-presenca-container .header {
+    margin: 20px;
+    background-color: #ffffff;
+    color: rgb(186, 15, 228);
+    padding: 15px 20px;
+    text-align: center;
+    width: 100%;
+    box-sizing: border-box;
+    border-bottom: 2px solid #b44fea;
+}
+
+/* Gradientes Exclusivos por Trimestre */
+
+/* Trimestre 1: Janeiro, Fevereiro, Março */
+.menu-meses button.mes-button:nth-child(1),
+.menu-meses button.mes-button:nth-child(2),
+.menu-meses button.mes-button:nth-child(3) {
+background: linear-gradient(45deg, #ff9a9e, #fad0c4); /* Rosa Claro */
+}
+
+/* Trimestre 2: Abril, Maio, Junho */
+.menu-meses button.mes-button:nth-child(4),
+.menu-meses button.mes-button:nth-child(5),
+.menu-meses button.mes-button:nth-child(6) {
+background: linear-gradient(45deg, #a1c4fd, #c2e9fb); /* Azul Claro */
+}
+
+/* Trimestre 3: Julho, Agosto, Setembro */
+.menu-meses button.mes-button:nth-child(7),
+.menu-meses button.mes-button:nth-child(8),
+.menu-meses button.mes-button:nth-child(9) {
+background: linear-gradient(45deg, #d4fc79, #96e6a1); /* Verde Claro */
+}
+
+/* Trimestre 4: Outubro, Novembro, Dezembro */
+.menu-meses button.mes-button:nth-child(10),
+.menu-meses button.mes-button:nth-child(11),
+.menu-meses button.mes-button:nth-child(12) {
+background: linear-gradient(45deg, #fbc2eb, #a6c1ee); /* Roxo/Azul */
+}
+
+/* Destacar o Mês Corrente com Borda Animada */
+.menu-meses button.mes-button.active {
+position: relative; /* Necessário para posicionamento do pseudo-elemento */
+z-index: 1; /* Garante que a borda fique acima de outros elementos */
+}
+
+/* Pseudo-elemento para a Borda Animada */
+.menu-meses button.mes-button.active::before {
+content: '';
+position: absolute;
+top: -4px;
+left: -4px;
+right: -4px;
+bottom: -4px;
+border: 2px solid transparent;
+border-radius: 8px; /* Deve corresponder ao border-radius do botão */
+background: linear-gradient(45deg, #ff9a9e, #fad0c4);
+background-clip: border-box;
+z-index: -1;
+animation: borderPulse 2s infinite;
+}
+
+/* Animação de Pulsação para a Borda */
+@keyframes borderPulse {
+0% {
+    box-shadow: 0 0 5px rgba(255, 154, 158, 0.5);
+}
+50% {
+    box-shadow: 0 0 20px rgba(255, 154, 158, 1);
+}
+100% {
+    box-shadow: 0 0 5px rgba(255, 154, 158, 0.5);
+}
+}
+
+
+
+/* Estilo para o Card */
+.card {
+background-color: #ffffff; /* Fundo branco */
+border-radius: 10px; /* Bordas arredondadas */
+box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+padding: 20px; /* Espaçamento interno */
+margin-top: 20px; /* Espaçamento acima do card */
+max-width: 800px; /* Largura máxima do card */
+margin-left: auto;
+margin-right: auto; /* Centraliza o card horizontalmente */
+}
+
+/* Ajustes para a Container dos Botões Dentro do Card */
+.card .button-container {
+display: flex;
+justify-content: center; /* Centraliza os botões horizontalmente */
+gap: 15px; /* Espaçamento entre os botões */
+flex-wrap: wrap; /* Permite que os botões quebrem para a próxima linha em telas menores */
+}
+
+/* Garantir que os Botões Dentro do Card Mantenham Seu Estilo */
+.card .button-container .btn {
+flex: 1 1 auto; /* Permite que os botões cresçam conforme o espaço disponível */
+min-width: 150px; /* Largura mínima dos botões */
+}
+
+/* Adicionar espaçamento entre o card dos botões e os calendários */
+#calendarios {
+margin-top: 40px; /* Espaçamento maior para separar dos botões */
+}
+
+/* Garantir que os Calendários Também São Cards */
+.calendario.card {
+margin-top: 20px; /* Espaçamento entre múltiplos cards de calendário */
+max-width: 800px; /* Largura máxima para consistência */
+}
+
+
+
+
+   /* Caledario Styles */
+.calendario {
+display: none;
+max-width: 400px;
+margin: 0 auto;
+}
+
+.calendario.active {
+display: block;
+}
+
+.dias-semana, .dias-mes {
+display: grid;
+grid-template-columns: repeat(7, 1fr);
+text-align: center;
+}
+
+.dias-semana div {
+font-weight: bold;
+padding: 8px 0;
+background-color: #f9f9f9;
+color: #333; /* Melhor contraste */
+}
+
+.dias-mes div {
+padding: 8px 0;
+border: 1px solid #ddd;
+cursor: pointer;
+position: relative;
+transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+color: #333; /* Melhor contraste */
+}
+
+.dias-semana div.weekend, .dias-mes div.weekend {
+color: #d9534f; /* Vermelho para destacar */
+font-weight: bold;
+background-color: #f7e6e6; /* Fundo diferenciado */
+transition: background-color 0.3s ease;
+}
+
+.dias-mes div.weekend:hover {
+background-color: #f1c6c6;
+}
+
+.dias-mes div:hover {
+background-color: #f1f1f1;
+box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.dias-mes .selecionado {
+background-color: #cce5ff;
+border-color: #004085;
+animation: selecionarDia 0.5s;
+}
+
+.dias-mes .selecionado .contador {
+background-color: #28a745; /* Verde para indicar contagem */
+color: white;
+border-radius: 50%;
+padding: 3px 6px;
+font-size: 12px;
+font-weight: bold;
+box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
+}
+
+.contador {
+position: absolute;
+top: 2px;
+right: 2px;
+background-color: #28a745; /* Verde */
+color: white;
+border-radius: 50%;
+padding: 3px 6px;
+font-size: 12px;
+font-weight: bold;
+box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
+}
+
+/* Animação ao selecionar um dia */
+@keyframes selecionarDia {
+0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+}
+50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+}
+}
+
+/* Destacar o Dia Atual */
+.dias-mes .dia-atual {
+background-color: #ffeeba; /* Amarelo claro */
+border-color: #ffc107; /* Amarelo */
+position: relative;
+font-weight: bold;
+}
+
+.dias-mes .dia-atual::after {
+content: '';
+position: absolute;
+bottom: 4px;
+left: 50%;
+transform: translateX(-50%);
+width: 6px;
+height: 6px;
+background-color: #ffc107;
+border-radius: 50%;
+}
+
+/* Transições suaves para dias */
+.dias-mes div {
+transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+/* Estilo para o Card */
+.card {
+background-color: #ffffff; /* Fundo branco */
+border-radius: 10px; /* Bordas arredondadas */
+box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+padding: 20px; /* Espaçamento interno */
+margin-top: 20px; /* Espaçamento acima do card */
+max-width: 800px; /* Largura máxima do card */
+margin-left: auto;
+margin-right: auto; /* Centraliza o card horizontalmente */
+}
+
+/* Ajustes para a Container dos Botões Dentro do Card */
+.card .button-container {
+display: flex;
+justify-content: center; /* Centraliza os botões horizontalmente */
+gap: 15px; /* Espaçamento entre os botões */
+flex-wrap: wrap; /* Permite que os botões quebrem para a próxima linha em telas menores */
+}
+
+/* Garantir que os Botões Dentro do Card Mantenham Seu Estilo */
+.card .button-container .btn {
+flex: 1 1 auto; /* Permite que os botões cresçam conforme o espaço disponível */
+min-width: 150px; /* Largura mínima dos botões */
+}
+
+/* Adicionar espaçamento entre o card dos botões e os calendários */
+#calendarios {
+margin-top: 40px; /* Espaçamento maior para separar dos botões */
+}
+
+/* Garantir que os Calendários Também São Cards */
+.calendario.card {
+margin-top: 20px; /* Espaçamento entre múltiplos cards de calendário */
+max-width: 800px; /* Largura máxima para consistência */
+}
+
+/* Responsividade */
+@media (max-width: 1024px) {
+.card .button-container .btn {
+    min-width: 120px;
+    font-size: 14px;
+    padding: 10px 20px;
+}
+}
+
+@media (max-width: 600px) {
+.card .button-container .btn {
+    min-width: 100px;
+    font-size: 12px;
+    padding: 8px 15px;
+}
+
+.dias-semana div, .dias-mes div {
+    padding: 6px 0;
+    font-size: 12px;
+}
+
+.contador {
+    font-size: 10px;
+    padding: 2px 4px;
+}
+}
+
+ 
+
+    /* Tabela para PDF (Oculta) */
+    #tabela-pdf {
+        position: absolute;
+        top: 0;
+        left: 0;
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    /* Estilos para mensagens de erro/sucesso */
+    .mensagem {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 15px 20px;
+        border-radius: 5px;
+        color: white;
+        display: none;
+        z-index: 1000;
+    }
+
+    .mensagem.erro {
+        background-color: #f44336; /* Vermelho */
+    }
+
+    .mensagem.sucesso {
+        background-color: #4CAF50; /* Verde */
+    }
+
+     /* Adicionando a cor vermelha para Domingo e Sábado */
+.dias-semana div.weekend {
+    color: red; /* Define a cor vermelha para Domingo e Sábado */
+}
+
+/* Estilo para o Card */
+.card {
+background-color: #ffffff; /* Fundo branco */
+border-radius: 10px; /* Bordas arredondadas */
+box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+padding: 20px; /* Espaçamento interno */
+margin-top: 20px; /* Espaçamento acima do card */
+max-width: 800px; /* Largura máxima do card */
+margin-left: auto;
+margin-right: auto; /* Centraliza o card horizontalmente */
+}
+
+/* Ajustes para a Container dos Botões Dentro do Card */
+.card .button-container {
+display: flex;
+justify-content: center; /* Centraliza os botões horizontalmente */
+gap: 15px; /* Espaçamento entre os botões */
+flex-wrap: wrap; /* Permite que os botões quebrem para a próxima linha em telas menores */
+}
+
+/* Garantir que os Botões Dentro do Card Mantenham Seu Estilo */
+.card .button-container .btn {
+flex: 1 1 auto; /* Permite que os botões cresçam conforme o espaço disponível */
+min-width: 150px; /* Largura mínima dos botões */
+}
+
+    /* Estilo Base para os Botões */
+    .btn {
+        border: none;
+        border-radius: 30px;
+        color: white;
+        padding: 12px 25px;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        background-size: 200% 200%; /* Para animação de gradiente */
+        animation: gradientShift 5s linear infinite, pulse 2s infinite; /* Animações simultâneas */
+    }
+
+    /* Efeito de Hover: Aumento de Escala e Sombra */
+    .btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Animação de Pulsação */
+    @keyframes pulse {
+        0% {
+            transform: scale(1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        50% {
+            transform: scale(1.05);
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+        }
+        100% {
+            transform: scale(1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+    }
+
+    /* Animação Sutil de Gradiente */
+    @keyframes gradientShift {
+        0% {
+            background-position: 0% 50%;
+        }
+        50% {
+            background-position: 100% 50%;
+        }
+        100% {
+            background-position: 0% 50%;
+        }
+    }
+
+    /* Estilo Específico para o Botão "Resetar Seleções" */
+    .btn-resetar {
+        background: linear-gradient(45deg, #ff6b6b, #f06595);
+    }
+
+    /* Estilo Específico para o Botão "Exportar CSV" */
+    .btn-export-csv {
+        background: linear-gradient(45deg, #36d1dc, #5b86e5);
+    }
+
+    /* Estilo Específico para o Botão "Gerar PDF" */
+    .btn-export-pdf {
+        background: linear-gradient(45deg, #11998e, #38ef7d);
+    }
+
+    /* Tabela para PDF (Oculta) */
+    #tabela-pdf {
+        position: absolute;
+        top: 0;
+        left: 0;
+        opacity: 0;
+        pointer-events: none;
+    }
+
+  /* Estilo para o contêiner de layout */
+.layout-container {
+display: flex;
+flex-direction: row;
+}
+
+/* Menu Lateral dos Meses */
+.menu-meses {
+width: 150px; /* Ajuste conforme necessário */
+padding: 10px;
+background-color: #f0f0f0;
+border-right: 1px solid #ddd;
+overflow-y: auto;
+position: sticky;
+top: 0;
+height: 100vh;
+display: flex;
+flex-direction: column;
+align-items: center;
+}
+
+/* Novo Menu Lateral dos Botões */
+.menu-botoes {
+width: 150px; /* Mesmo valor que o menu de meses */
+padding: 10px;
+background-color: #f0f0f0;
+border-right: 1px solid #ddd;
+overflow-y: auto;
+position: sticky;
+top: 0;
+height: 100vh;
+display: flex;
+flex-direction: column;
+align-items: center;
+}
+
+/* Conteúdo Principal */
+.main-content {
+flex: 1;
+padding: 20px;
+}
+
+/* Botões do Menu de Meses */
+.menu-meses button.mes-button,
+.menu-botoes .btn {
+width: 80%; /* Ajuste para um tamanho adequado */
+margin: 5px auto;
+display: block;
+padding: 10px;
+margin-bottom: 10px;
+font-size: 14px;
+font-weight: bold;
+color: white;
+border: none;
+border-radius: 8px;
+cursor: pointer;
+transition: transform 0.3s ease, box-shadow 0.3s ease;
+background-size: 200% 200%;
+animation: gradientShift 5s linear infinite;
+position: relative;
+text-align: center;
+}
+
+/* Estilos Específicos para os Botões */
+.menu-botoes .btn-resetar {
+background: linear-gradient(45deg, #ff6b6b, #f06595);
+}
+
+.menu-botoes .btn-export-pdf {
+background: linear-gradient(45deg, #11998e, #38ef7d);
+}
+
+/* Animação Sutil de Gradiente */
+@keyframes gradientShift {
+0% {
+    background-position: 0% 50%;
+}
+50% {
+    background-position: 100% 50%;
+}
+100% {
+    background-position: 0% 50%;
+}
+}
+
+/* Estilo para o Botão Ativo */
+/* Removed empty rule set for .menu-meses button.mes-button.active */
+
+/* Removed empty rule set for .menu-botoes .btn.active */
+
+/* Responsividade */
+@media (max-width: 768px) {
+.layout-container {
+    flex-direction: column;
+}
+
+.menu-meses,
+.menu-botoes {
+    width: 100%;
+    height: auto;
+    position: relative;
+    border-right: none;
+    border-bottom: 1px solid #ddd;
+    height: auto;
+}
+
+.main-content {
+    padding: 10px;
+}
+}
+
+
+/* Estilos para o Contêiner das Checkboxes */
+.checkbox-container {
+margin-top: 20px;
+display: flex;
+flex-direction: column;
+align-items: flex-start; /* Alinha os itens à esquerda */
+}
+
+/* Estilos para o Label da Checkbox */
+.checkbox-label {
+display: flex;
+align-items: center;
+position: relative;
+cursor: pointer;
+margin-bottom: 15px;
+font-size: 16px;
+color: #333;
+}
+
+/* Estilos para o Input da Checkbox (oculto) */
+.checkbox-input {
+position: absolute;
+opacity: 0;
+cursor: pointer;
+}
+
+/* Estilos para a Caixa Personalizada da Checkbox */
+.checkbox-custom {
+position: relative;
+width: 20px;
+height: 20px;
+background-color: #f0f0f0;
+border-radius: 4px;
+margin-right: 10px;
+transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Efeito ao Hover na Checkbox */
+.checkbox-label:hover .checkbox-custom {
+background-color: #e0e0e0;
+}
+
+/* Estilos para a Checkbox Selecionada */
+.checkbox-input:checked ~ .checkbox-custom {
+background-color: #38ef7d; /* Mesma cor do botão Gerar PDF */
+animation: pulse 1s infinite;
+}
+
+/* Ícone de Check na Checkbox Selecionada */
+.checkbox-input:checked ~ .checkbox-custom::after {
+content: '';
+position: absolute;
+left: 6px;
+top: 2px;
+width: 5px;
+height: 10px;
+border: solid white;
+border-width: 0 2px 2px 0;
+transform: rotate(45deg);
+}
+
+/* Animação de Pulso para a Checkbox Selecionada */
+@keyframes pulse {
+0% {
+    box-shadow: 0 0 0 0 rgba(56, 239, 125, 0.7);
+}
+70% {
+    box-shadow: 0 0 0 10px rgba(56, 239, 125, 0);
+}
+100% {
+    box-shadow: 0 0 0 0 rgba(56, 239, 125, 0);
+}
+}
+
+/* Ajuste dos Botões no Menu de Botões */
+.menu-botoes .btn {
+width: 100%; /* Ajuste a largura conforme necessário */
+margin: 5px 0; /* Remove o auto para alinhar à esquerda */
+display: block;
+/* ... outros estilos existentes ... */
+}
+
+
+</style>

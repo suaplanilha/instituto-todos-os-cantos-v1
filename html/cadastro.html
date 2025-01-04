@@ -1,0 +1,1367 @@
+<!-- Incluir CSS do DataTables -->
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.5/css/jquery.dataTables.min.css"/>
+<style>
+   /* Estilos para o Cabeçalho do Dashboard */
+   .titulo-cadastro-container h2 {
+        background-color: #ffffff;
+        color: rgb(186, 15, 228);
+        padding: 15px 20px;
+        text-align: center;
+        width: 100%;
+        box-sizing: border-box;
+        border-bottom: 2px solid #b44fea;
+    }
+</style>
+<!-- Atualizar a seção do título -->
+<div class="titulo-cadastro-container">
+  <h2>Cadastro</h2>
+  <button id="btnCadastrarNovo" class="btn-cadastrar-novo">Cadastrar Novo</button>
+  <!-- Ícone de notificação -->
+  <div class="notification-icon" onclick="abrirNovosRegistros()">
+    <span id="notification-count">0</span> <!-- Contador de novos registros -->
+    <img src="https://img.icons8.com/ios-glyphs/30/000000/appointment-reminders.png" alt="Notificações">
+  </div>
+</div>
+
+<!-- Modal para novos registros -->
+<div id="modalNovosRegistros" class="modal">
+  <div class="modal-content">
+    <span class="close-button" onclick="fecharModalNovosRegistros()">&times;</span>
+    <h2>Novos Registros</h2>
+    <!-- Botão de fechar modal -->
+    <button type="button" class="btn-fechar" onclick="fecharModalNovosRegistros()">Fechar</button>
+    <!-- Tabela para exibir os novos registros -->
+    <table id="tabelaNovosRegistros" class="display" style="width:100%">
+  <thead>
+    <tr>
+      <th>Nome Completo</th>
+      <th>Celular</th>
+      <th>Data Nascimento</th>
+      <th>Data Cadastro</th>
+      <th>Tipo Coral</th>
+    </tr>
+  </thead>
+  <tbody>
+    <!-- Dados serão inseridos dinamicamente -->
+  </tbody>
+</table>
+  </div>
+</div>
+
+<!-- Modal para detalhes do registro -->
+<div id="modalDetalhesRegistro" class="modal">
+  <div class="modal-content">
+    <span class="close-button" onclick="fecharModalDetalhesRegistro()">&times;</span>
+    <h2>Detalhes do Registro</h2>
+    <!-- Formulário com todos os campos -->
+    <form id="formDetalhesRegistro">
+      <div class="form-grid">
+        <!-- Linha 1: Nome Completo -->
+        <div class="form-row">
+          <label for="detalhesNomeCompleto">Nome Completo:</label>
+          <input type="text" id="detalhesNomeCompleto" name="detalhesNomeCompleto">
+        </div>
+        <!-- Linha 2: Endereço -->
+        <div class="form-row">
+          <label for="detalhesEndereco">Endereço:</label>
+          <input type="text" id="detalhesEndereco" name="detalhesEndereco">
+        </div>
+        <!-- Linha 3: RG -->
+        <div class="form-row">
+          <label for="detalhesRG">RG:</label>
+          <input type="text" id="detalhesRG" name="detalhesRG">
+        </div>
+        <!-- Linha 4: CPF -->
+        <div class="form-row">
+          <label for="detalhesCPF">CPF:</label>
+          <input type="text" id="detalhesCPF" name="detalhesCPF">
+        </div>
+        <!-- Linha 5: Celular -->
+        <div class="form-row">
+          <label for="detalhesCelular">Celular:</label>
+          <input type="text" id="detalhesCelular" name="detalhesCelular">
+        </div>
+        <!-- Linha 6: Profissão -->
+        <div class="form-row">
+          <label for="detalhesProfissao">Profissão:</label>
+          <input type="text" id="detalhesProfissao" name="detalhesProfissao">
+        </div>
+        <!-- Linha 7: Email -->
+        <div class="form-row">
+          <label for="detalhesEmail">Email:</label>
+          <input type="email" id="detalhesEmail" name="detalhesEmail">
+        </div>
+        <!-- Linha 8: Data de Nascimento -->
+        <div class="form-row">
+          <label for="detalhesDataNascimento">Data de Nascimento:</label>
+          <input type="date" id="detalhesDataNascimento" name="detalhesDataNascimento">
+        </div>
+        <!-- Linha 9: Escolaridade -->
+        <div class="form-row">
+          <label for="detalhesEscolaridade">Escolaridade:</label>
+          <select id="detalhesEscolaridade" name="detalhesEscolaridade">
+            <option value="Educação infantil">Educação infantil</option>
+            <option value="Fundamental">Fundamental</option>
+            <option value="Médio">Médio</option>
+            <option value="Superior (Graduação)">Superior (Graduação)</option>
+            <option value="Pós-graduação">Pós-graduação</option>
+            <option value="Mestrado">Mestrado</option>
+            <option value="Doutorado">Doutorado</option>
+            <option value="Escola">Escola</option>
+          </select>
+        </div>
+        <!-- Linha 10: Ligação com Música -->
+        <div class="form-row">
+          <label for="detalhesLigacaoComMusica">Ligação com Música:</label>
+          <input type="text" id="detalhesLigacaoComMusica" name="detalhesLigacaoComMusica">
+        </div>
+        <!-- Linha 11: Classificação Vocal -->
+        <div class="form-row">
+          <label for="detalhesClassificacaoVocal">Classificação Vocal:</label>
+          <select id="detalhesClassificacaoVocal" name="detalhesClassificacaoVocal">
+            <option value="">Selecione</option>
+            <option value="Mezzo-soprano">Mezzo-soprano</option>
+            <option value="Barítono">Barítono</option>
+            <option value="Soprano">Soprano</option>
+            <option value="Contralto">Contralto</option>
+            <option value="Tenor">Tenor</option>
+          </select>
+        </div>
+        <!-- Linha 12: Como Soube -->
+        <div class="form-row">
+          <label for="detalhesComoSoube">Como Soube:</label>
+          <input type="text" id="detalhesComoSoube" name="detalhesComoSoube">
+        </div>
+        <!-- Linha 13: Tipo de Coral -->
+        <div class="form-row">
+          <label for="detalhesTipoCoral">Tipo de Coral:</label>
+          <select id="detalhesTipoCoral" name="detalhesTipoCoral">
+            <option value="" disabled selected>Escolha uma opção</option>
+            <option value="CoralUnimed">Coral Unimed</option>
+            <option value="AlgazarraCoral">Algazarra Coral</option>
+          </select>
+        </div>
+        <!-- Linha 14: Status -->
+        <div class="form-row">
+          <label for="detalhesStatus">Status:</label>
+          <select id="detalhesStatus" name="detalhesStatus">
+            <option value="Ativo">Ativo</option>
+            <option value="Desistente">Desistente</option>
+          </select>
+        </div>
+        <!-- Linha 15: Gênero -->
+        <div class="form-row">
+          <label for="detalhesGenero">Gênero:</label>
+          <select id="detalhesGenero" name="detalhesGenero">
+            <option value="Feminino">Feminino</option>
+            <option value="Masculino">Masculino</option>
+          </select>
+        </div>
+        <!-- Linha 16: Data de Desistência -->
+        <div class="form-row">
+          <label for="detalhesDataDesistencia">Data de Desistência:</label>
+          <input type="date" id="detalhesDataDesistencia" name="detalhesDataDesistencia">
+        </div>
+        <!-- Linha 17: Data de Cadastro -->
+        <div class="form-row">
+          <label for="detalhesDataCadastro">Data de Cadastro:</label>
+          <input type="date" id="detalhesDataCadastro" name="detalhesDataCadastro">
+        </div>
+        <!-- Linha 18: Recebe Benefício -->
+        <div class="form-row">
+          <label for="detalhesRecebeBeneficio">Recebe Benefício:</label>
+          <select id="detalhesRecebeBeneficio" name="detalhesRecebeBeneficio">
+            <option value="">Selecione</option>
+            <option value="bolsista">Bolsista</option>
+            <option value="cestaBasicaVerde">Cesta Básica + Cesta Verde</option>
+          </select>
+        </div>
+        <!-- Linha 19: Termo Uso de Imagem -->
+        <div class="form-row">
+          <label for="detalhesUsoImagem">Termo Uso de Imagem:</label>
+          <select id="detalhesUsoImagem" name="detalhesUsoImagem">
+            <option value="Sim">Sim</option>
+            <option value="Não">Não</option>
+          </select>
+        </div>
+        <!-- Linha 20: Tipo de Responsável -->
+        <div class="form-row">
+          <label for="detalhesTipoResponsavel">Tipo de Responsável:</label>
+          <select id="detalhesTipoResponsavel" name="detalhesTipoResponsavel">
+            <option value="">Selecione um responsável</option>
+            <option value="avo1">Avô</option>
+            <option value="avo2">Avó</option>
+            <option value="tio">Tio(a)</option>
+            <option value="irmao">Irmão(ã)</option>
+            <option value="outro">Outro Responsável</option>
+          </select>
+        </div>
+        <!-- Linha 21: Nome do Responsável -->
+        <div class="form-row" id="detalhesResponsavelContainer" style="display: none;">
+          <label for="detalhesResponsavel">Nome do Responsável:</label>
+          <input type="text" id="detalhesResponsavel" name="detalhesResponsavel">
+        </div>
+        <!-- Linha 22: Nome do Pai -->
+        <div class="form-row">
+          <label for="detalhesNomePai">Nome do Pai:</label>
+          <input type="text" id="detalhesNomePai" name="detalhesNomePai">
+        </div>
+        <!-- Linha 23: Nome da Mãe -->
+        <div class="form-row">
+          <label for="detalhesNomeMae">Nome da Mãe:</label>
+          <input type="text" id="detalhesNomeMae" name="detalhesNomeMae">
+        </div>
+        <!-- Linha 24: Bairro -->
+        <div class="form-row">
+          <label for="detalhesBairro">Bairro:</label>
+          <input type="text" id="detalhesBairro" name="detalhesBairro">
+        </div>
+        <!-- Linha 25: Cidade -->
+        <div class="form-row">
+          <label for="detalhesCidade">Cidade:</label>
+          <input type="text" id="detalhesCidade" name="detalhesCidade">
+        </div>
+        <!-- Linha 26: UF -->
+        <div class="form-row">
+          <label for="detalhesUF">Estado (UF):</label>
+          <input type="text" id="detalhesUF" name="detalhesUF">
+        </div>
+        <!-- Linha 27: CEP -->
+        <div class="form-row">
+          <label for="detalhesCEP">CEP:</label>
+          <input type="text" id="detalhesCEP" name="detalhesCEP">
+          <a href="https://buscacepinter.correios.com.br/app/endereco/index.php" target="_blank" class="consulta-cep-link">Consulta CEP</a>
+        </div>
+      </div>
+      <!-- Botões -->
+      <div class="form-actions">
+        <button type="button" class="btn-transferir" onclick="transferirRegistro()">Transferir</button>
+        <button type="button" class="btn-fechar" onclick="fecharModalDetalhesRegistro()">Fechar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+
+<!-- Tabela para exibir os dados -->
+<table id="tabelaAlunos" class="display" style="width:100%">
+  <thead>
+    <tr>
+      <th>Nome Completo</th>
+      <th>Endereço</th>
+      <th>CPF</th>
+      <th>Celular</th>
+      <th>Email</th>
+      <th>Data Nascimento</th>
+      <!-- Adicionar demais colunas conforme necessário -->
+    </tr>
+  </thead>
+  <tbody>
+    <!-- Dados serão inseridos dinamicamente -->
+  </tbody>
+</table>
+
+<!-- Tabela para exibir os dados -->
+<table id="tabelaAlunos" class="display" style="width:100%">
+  <!-- ... conteúdo existente da tabela ... -->
+</table>
+
+<!-- Modal de cadastro -->
+<div id="modalCadastro" class="modal">
+  <div class="modal-content">
+    <span class="close-button" onclick="fecharModal()">&times;</span>
+    <h2>Cadastro Novo</h2>
+    <!-- Formulário de cadastro -->
+  
+<form id="formCadastro">
+  <div class="form-grid">
+    <!-- Linha 2 -->
+    <div class="form-row">
+      <label for="nomeCompleto">Nome Completo:</label>
+      <input type="text" id="nomeCompleto" name="nomeCompleto" required>
+    </div>
+    <!-- Linha 3 -->
+     <!-- Linha X: CEP -->
+        <div class="form-row">
+          <label for="cep">CEP:</label>
+          <input type="text" id="cep" name="cep">
+          <a href="https://buscacepinter.correios.com.br/app/endereco/index.php" target="_blank" class="consulta-cep-link">Consulta CEP</a>
+        </div>
+        <!-- Linha X+1: Endereço -->
+        <div class="form-row">
+          <label for="endereco">Endereço:</label>
+          <input type="text" id="endereco" name="endereco" required>
+        </div>
+        <!-- Linha X+2: Bairro -->
+        <div class="form-row">
+          <label for="bairro">Bairro:</label>
+          <input type="text" id="bairro" name="bairro">
+        </div>
+        <!-- Linha X+3: Cidade -->
+        <div class="form-row">
+          <label for="cidade">Cidade:</label>
+          <input type="text" id="cidade" name="cidade">
+        </div>
+        <!-- Linha X+4: Estado -->
+        <div class="form-row">
+          <label for="estado">Estado:</label>
+          <input type="text" id="estado" name="estado">
+        </div>
+    <!-- Linha 4 -->
+    <div class="form-row">
+      <label for="rg">RG:</label>
+      <input type="text" id="rg" name="rg">
+    </div>
+    <!-- Linha 5 -->
+    <div class="form-row">
+      <label for="cpf">CPF:</label>
+      <input type="text" id="cpf" name="cpf">
+    </div>
+    <!-- Linha 6 -->
+    <div class="form-row">
+      <label for="celular">Celular:</label>
+      <input type="text" id="celular" name="celular">
+    </div>
+    <!-- Linha 7 -->
+    <div class="form-row">
+      <label for="profissao">Profissão:</label>
+      <input type="text" id="profissao" name="profissao">
+    </div>
+    <!-- Linha 8 -->
+    <div class="form-row">
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email">
+    </div>
+    <!-- Linha 9 -->
+    <div class="form-row">
+      <label for="dataNascimento">Data de Nascimento:</label>
+      <input type="date" id="dataNascimento" name="dataNascimento">
+    </div>
+    <!-- Linha 10 -->
+    <div class="form-row">
+      <label for="escolaridade">Escolaridade:</label>
+      <select id="escolaridade" name="escolaridade">
+        <option value="Educação infantil">Educação infantil</option>
+        <option value="Fundamental">Fundamental</option>
+        <option value="Médio">Médio</option>
+        <option value="Superior (Graduação)">Superior (Graduação)</option>
+        <option value="Pós-graduação">Pós-graduação</option>
+        <option value="Mestrado">Mestrado</option>
+        <option value="Doutorado">Doutorado</option>
+        <option value="Escola">Escola</option>
+      </select>
+    </div>
+    <!-- Linha 11 -->
+    <div class="form-row">
+      <label for="ligacaoComMusica">Ligação com Música:</label>
+      <input type="text" id="ligacaoComMusica" name="ligacaoComMusica">
+    </div>
+      <!-- Linha 12 -->
+    <div class="form-row">
+  <label for="classificacaoVocal">Tipo de Vocação:</label>
+  <select id="classificacaoVocal" name="classificacaoVocal">
+     <option value="">Tipo de Vocação</option>
+    <option value="Mezzo-soprano">Mezzo-soprano</option>
+    <option value="Barítono">Barítono </option>
+     <option value="Soprano">Soprano</option>
+       <option value="Contralto">Contralto</option>
+         <option value="Tenor">Tenor</option>
+  </select>
+</div>
+
+    <!-- Linha 13 -->
+    <div class="form-row">
+      <label for="comoSoube">Como Soube:</label>
+      <input type="text" id="comoSoube" name="comoSoube">
+    </div>
+    <!-- Linha 14 -->
+    <div class="form-row">
+      <label for="tipoCoral">Tipo de Coral:</label>
+      <select id="tipoCoral" name="tipoCoral">
+        <option value="" disabled selected>Escolha uma opção</option>
+        <option value="CoralUnimed">Coral Unimed</option>
+        <option value="AlgazarraCoral">Algazarra Coral</option>
+      </select>
+    </div>
+    <!-- Linha 15 -->
+    <div class="form-row">
+      <label for="status">Status:</label>
+      <select id="status" name="status">
+        <option value="Ativo">Ativo</option>
+        <option value="Desistente">Desistente</option>
+      </select>
+    </div>
+    <!-- Linha 16 -->
+    <div class="form-row">
+      <label for="genero">Gênero:</label>
+      <select id="genero" name="genero">
+        <option value="Feminino">Feminino</option>
+        <option value="Masculino">Masculino</option>
+      </select>
+    </div>
+    <!-- Linha 17 -->
+     
+    <div class="form-row">
+      <label for="dataDesistencia">Data de Desistência:</label>
+      <input type="date" id="dataDesistencia" name="dataDesistencia">
+    </div>
+
+    <!-- Linha 18 -->
+    <div class="form-row">
+      <label for="dataCadastro">Data de Cadastro:</label>
+      <input type="date" id="dataCadastro" name="dataCadastro" required>
+    </div>
+
+    <!-- Linha 19 -->
+    <div class="form-row">
+  <label for="recebeBeneficio">Recebe Benefício:</label>
+  <select id="recebeBeneficio" name="recebeBeneficio">
+     <option value="">Recebe Benefício</option>
+     <option value="bolsista">Bolsista</option>
+     <option value="cestaBasicaVerde">Cesta Básica + Cesta Verde</option>
+  </select>
+</div>
+
+<!-- Linha 20 -->
+ <div class="form-row">
+      
+    </div>
+
+ <!-- Linha 21 -->
+<div class="form-row">
+  <label for="usoImagem">Termo uso de imagem:</label>
+  <select id="usoImagem" name="usoImagem">
+    <option value="Sim">Sim</option>
+    <option value="Não">Não</option>
+  </select>
+</div>
+ <!-- Linha 22: Adicionar nova caixa de seleção para tipoResponsavel -->
+<div class="form-row">
+  <label for="tipoResponsavel">Tipo de Responsável:</label>
+  <select id="tipoResponsavel" name="tipoResponsavel">
+    <option value="">Selecione um responsável</option>
+    <option value="avo1">Avô</option>
+    <option value="avo2">Avó</option>
+    <option value="tio">Tio(a)</option>
+    <option value="irmao">Irmão(ã)</option>
+    <option value="outro">Outro Responsável</option>
+  </select>
+</div>
+
+ <!-- Linha 23: Modificar o campo responsavel para estar oculto por padrão -->
+<div class="form-row" id="responsavelcontainer" style="display: none;">
+  <label for="responsavel">Nome do Responsável:</label>
+  <input type="text" id="responsavel" name="responsavel">
+</div>
+
+ <!-- Linha 24 -->
+<div class="form-row">
+  <label for="nomePai">Nome do Pai:</label>
+  <input type="text" id="nomePai" name="nomePai">
+</div>
+ <!-- Linha 25 -->
+<div class="form-row">
+  <label for="nomeMae">Nome da Mãe:</label>
+  <input type="text" id="nomeMae" name="nomeMae">
+</div>
+
+  </div>
+  <!-- Botões -->
+  <div class="form-actions">
+    <button type="submit" class="btn-salvar">Salvar</button>
+    <button type="button" class="btn-fechar" onclick="fecharModal()">Fechar</button>
+  </div>
+</form>
+
+  </div>
+</div>
+
+<!-- Modal de Edição -->
+<div id="modalEditarCadastro" class="modal">
+  <div class="modal-content">
+    <span class="close-button" onclick="fecharModal()">&times;</span>
+    <h2>Editar Cadastro</h2>
+    <!-- Formulário de edição -->
+    <form id="formEditarCadastro">
+      <div class="form-grid">
+        <!-- Linha 1: Nome Completo -->
+        <div class="form-row">
+          <label for="editarNomeCompleto">Nome Completo:</label>
+          <input type="text" id="editarNomeCompleto" name="editarNomeCompleto">
+        </div>
+        
+         <!-- Linha X: CEP -->
+        <div class="form-row">
+          <label for="editarCEP">CEP:</label>
+          <input type="text" id="editarCEP" name="editarCEP">
+        </div>
+        <!-- Linha X+1: Endereço -->
+        <div class="form-row">
+          <label for="editarEndereco">Endereço:</label>
+          <input type="text" id="editarEndereco" name="editarEndereco">
+        </div>
+        <!-- Linha X+2: Bairro -->
+        <div class="form-row">
+          <label for="editarBairro">Bairro:</label>
+          <input type="text" id="editarBairro" name="editarBairro">
+        </div>
+        <!-- Linha X+3: Cidade -->
+        <div class="form-row">
+          <label for="editarCidade">Cidade:</label>
+          <input type="text" id="editarCidade" name="editarCidade">
+        </div>
+        <!-- Linha X+4: Estado -->
+        <div class="form-row">
+          <label for="editarEstado">Estado:</label>
+          <input type="text" id="editarEstado" name="editarEstado">
+        </div>
+        
+        <!-- Linha 3: RG -->
+        <div class="form-row">
+          <label for="editarRG">RG:</label>
+          <input type="text" id="editarRG" name="editarRG">
+        </div>
+
+        <!-- Linha 4: CPF -->
+        <div class="form-row">
+          <label for="editarCPF">CPF:</label>
+          <input type="text" id="editarCPF" name="editarCPF">
+        </div>
+
+        <!-- Linha 5: Celular -->
+        <div class="form-row">
+          <label for="editarCelular">Celular:</label>
+          <input type="text" id="editarCelular" name="editarCelular">
+        </div>
+
+        <!-- Linha 6: Profissão -->
+        <div class="form-row">
+          <label for="editarProfissao">Profissão:</label>
+          <input type="text" id="editarProfissao" name="editarProfissao">
+        </div>
+
+        <!-- Linha 7: Email -->
+        <div class="form-row">
+          <label for="editarEmail">Email:</label>
+          <input type="email" id="editarEmail" name="editarEmail">
+        </div>
+
+        <!-- Linha 8: Data de Nascimento -->
+        <div class="form-row">
+          <label for="editarDataNascimento">Data de Nascimento:</label>
+          <input type="date" id="editarDataNascimento" name="editarDataNascimento">
+        </div>
+
+        <!-- Linha 9: Escolaridade -->
+        <div class="form-row">
+          <label for="editarEscolaridade">Escolaridade:</label>
+          <select id="editarEscolaridade" name="editarEscolaridade">
+            <option value="Educação infantil">Educação infantil</option>
+            <option value="Fundamental">Fundamental</option>
+            <option value="Médio">Médio</option>
+            <option value="Superior (Graduação)">Superior (Graduação)</option>
+            <option value="Pós-graduação">Pós-graduação</option>
+            <option value="Mestrado">Mestrado</option>
+            <option value="Doutorado">Doutorado</option>
+            <option value="Escola">Escola</option>
+          </select>
+        </div>
+
+        <!-- Linha 10: Ligação com Música -->
+        <div class="form-row">
+          <label for="editarLigacaoComMusica">Ligação com Música:</label>
+          <input type="text" id="editarLigacaoComMusica" name="editarLigacaoComMusica">
+        </div>
+
+        <!-- Linha 11: Classificação Vocal -->
+           <div class="form-row">
+              <label for="editarClassificacaoVocal">Tipo de Vocação:</label>
+              <select id="editarClassificacaoVocal" name="editarClassificacaoVocal">
+                <option value="">Tipo de Vocação</option>
+                <option value="Mezzo-soprano">Mezzo-soprano</option>
+                <option value="Barítono">Barítono </option>
+                <option value="Soprano">Soprano</option>
+                  <option value="Contralto">Contralto</option>
+                    <option value="Tenor">Tenor</option>
+              </select>
+            </div>
+
+
+        <!-- Linha 12: Como Soube -->
+        <div class="form-row">
+          <label for="editarComoSoube">Como Soube:</label>
+          <input type="text" id="editarComoSoube" name="editarComoSoube">
+        </div>
+
+        <!-- Linha 13: Tipo de Coral -->
+        <div class="form-row">
+          <label for="editarTipoCoral">Tipo de Coral:</label>
+          <select id="editarTipoCoral" name="editarTipoCoral">
+            <option value="" disabled selected>Escolha uma opção</option>
+            <option value="CoralUnimed">Coral Unimed</option>
+            <option value="AlgazarraCoral">Algazarra Coral</option>
+          </select>
+        </div>
+
+        <!-- Linha 14: Status -->
+     <div class="form-row">
+        <label for="editarStatus">Status:</label>
+        <select id="editarStatus" name="editarStatus">
+          <option value="Ativo">Ativo</option>
+          <option value="Desistente">Desistente</option>
+        </select>
+      </div>
+
+        <!-- Linha 15: Gênero -->
+        <div class="form-row">
+          <label for="editarGenero">Gênero:</label>
+          <select id="editarGenero" name="editarGenero">
+            <option value="Feminino">Feminino</option>
+            <option value="Masculino">Masculino</option>
+          </select>
+        </div>
+
+        <!-- Linha 16: Data de Desistência -->
+        <div class="form-row">
+          <label for="editarDataDesistencia">Data de Desistência:</label>
+          <input type="date" id="editarDataDesistencia" name="editarDataDesistencia">
+        </div>
+
+        <!-- Linha 17: Data de Cadastro -->
+        <div class="form-row">
+          <label for="editarDataCadastro">Data de Cadastro:</label>
+          <input type="date" id="editarDataCadastro" name="editarDataCadastro">
+        </div>
+
+        <!-- Linha 18: Recebe Benefício -->
+
+       <div class="form-row">
+        <label for="editarRecebeBeneficio">Recebe Benefício:</label>
+        <select id="editarRecebeBeneficio" name="editarRecebeBeneficio">
+          <option value="">Recebe Benefício</option>
+          <option value="bolsista">Bolsista</option>
+          <option value="cestaBasicaVerde">Cesta Básica + Cesta Verde</option>
+        </select>
+      </div>
+
+ <!-- Linha 19 -->
+<div class="form-row">
+  <label for="editarusoImagem">Termo uso de imagem:</label>
+  <select id="editarusoImagem" name="editarusoImagem">
+    <option value="Sim">Sim</option>
+    <option value="Não">Não</option>
+  </select>
+</div>
+
+<!-- Linha 20 -->
+ <!-- campo vazio -->
+
+<!-- Linha 21 -->
+<div class="form-row">
+  <label for="tipoResponsavelEditar">Tipo de Responsável:</label>
+  <select id="tipoResponsavelEditar" name="tipoResponsavelEditar">
+    <option value="">Selecione um responsável</option>
+    <option value="avo1">Avô</option>
+    <option value="avo2">Avó</option>
+    <option value="tio">Tio(a)</option>
+    <option value="irmao">Irmão(ã)</option>
+    <option value="outro">Outro Responsável</option>
+  </select>
+</div>
+
+<!-- Linha 22 -->
+<div class="form-row" id="editarResponsavelContainer" style="display: none;">
+  <label for="editarresponsavel">Nome do Responsável:</label>
+  <input type="text" id="editarresponsavel" name="editarresponsavel">
+</div>
+
+ 
+ <!-- Linha 23 -->
+<div class="form-row">
+  <label for="editarNomePai">Nome do Pai:</label>
+  <input type="text" id="editarNomePai" name="editarNomePai">
+</div>
+ <!-- Linha 24 -->
+<div class="form-row">
+  <label for="editarNomeMae">Nome da Mãe:</label>
+  <input type="text" id="editarNomeMae" name="editarNomeMae">
+</div>
+    
+      <!-- Botões -->
+      <div class="form-actions">
+        <button type="submit" class="btn-salvar">Salvar</button>
+        <button type="button" class="btn-fechar" onclick="fecharModal()">Fechar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+
+<script>
+// Inclua este código após a inclusão do jQuery e outras bibliotecas
+$(document).ready(function() {
+  var linhaIndiceGlobal;
+  var dadosCompleto = []; // Variável global para armazenar os dados do servidor
+  var table;
+
+  // Função para carregar os dados quando a página for ativada
+  function carregarDadosCadastro() {
+    // Exibir spinner de carregamento
+    $('#tabelaAlunos tbody').html('<tr><td colspan="9">Carregando...</td></tr>');
+
+    // Remover o evento dblclick antes de recriar a tabela para evitar duplicação
+    $('#tabelaAlunos').off('dblclick', 'tbody tr');
+
+    if ($.fn.dataTable.isDataTable('#tabelaAlunos')) {
+      $('#tabelaAlunos').DataTable().clear().destroy();
+    }
+
+    // Chamar a função do servidor para obter os dados
+    google.script.run.withSuccessHandler(function(response) {
+      dadosCompleto = response.data; // Armazenar os dados quando recebidos
+
+      // Processar os dados recebidos
+      if (response && response.data) {
+        // Inicializar a tabela com os dados
+        var table = $('#tabelaAlunos').DataTable({
+          data: response.data,
+          columns: [
+            { data: 'NomeCompleto' },
+            { data: 'Endereco' },
+            { data: 'CPF' },
+            { data: 'Celular' },
+            { data: 'Email' },
+            { data: 'dataNascimento' },
+          ],
+          pageLength: 20,
+          searching: true,
+          paging: true,
+          destroy: true // Permite reinicializar o DataTable
+        });
+
+        // Adicionar novamente o evento de duplo clique após a recriação da tabela
+        $('#tabelaAlunos').on('dblclick', 'tbody tr', function() {
+          var data = table.row(this).data(); // Obter os dados da linha clicada
+          var linhaIndice = table.row(this).index() + 2; // Captura o índice da linha na tabela (linha 1 é o cabeçalho)
+          var nome = data.NomeCompleto; // Coluna do nome
+          var cpf = data.CPF; // Coluna do CPF
+
+          // Chamar a função para abrir o modal de edição
+          editarCadastro(nome, cpf, linhaIndice); // Função para abrir o modal de edição
+        });
+      } else {
+        $('#tabelaAlunos tbody').html('<tr><td colspan="9">Nenhum dado disponível.</td></tr>');
+      }
+    }).withFailureHandler(function(error) {
+      console.error('Erro ao obter dados: ', error);
+      $('#tabelaAlunos tbody').html('<tr><td colspan="9">Erro ao carregar os dados.</td></tr>');
+    }).obterDadosCadastro(); // Chama a função sem parâmetros
+  }
+
+  // Função para aplicar as máscaras nos campos CPF e Celular
+  function aplicarMascaras() {
+    $('#cpf').inputmask('999.999.999-99');
+    $('#celular').inputmask('(99) 99999-9999');
+    $('#editarCPF').inputmask('999.999.999-99');
+    $('#editarCelular').inputmask('(99) 99999-9999');
+  }
+
+  // Função para carregar a data de hoje no campo dataCadastro
+  function preencherDataHoje() {
+    var hoje = new Date().toISOString().split('T')[0]; // Formato YYYY-MM-DD
+    $('#dataCadastro').val(hoje); // Preenche o campo dataCadastro com a data de hoje
+  }
+
+  // Abrir o modal ao clicar no botão
+  $('#btnCadastrarNovo').on('click', function() {
+    $('#modalCadastro').show(); // Abre o modal
+    aplicarMascaras(); // Aplica as máscaras assim que o modal é aberto
+    preencherDataHoje(); // Insere a data atual no campo "dataCadastro"
+  });
+
+  // Eventos para fechar o modal
+  $('.close-button').on('click', fecharModal); // Fecha o modal ao clicar no botão de fechar
+  $('.btn-fechar').on('click', fecharModal);   // Fecha o modal ao clicar no botão "Fechar"
+
+  // Fechar o modal ao clicar fora dele
+  $(window).on('click', function(event) {
+    if ($(event.target).is('#modalCadastro')) {
+      fecharModal(); // Fecha o modal se clicar fora dele
+    }
+  });
+
+  // Lidar com o envio do formulário
+  $('#formCadastro').on('submit', function(event) {
+    event.preventDefault(); // Impede o comportamento padrão de envio do formulário
+
+    // Obter os dados do formulário
+    var dados = {
+      nomeCompleto: $('#nomeCompleto').val(),
+      endereco: $('#endereco').val(),
+      bairro: $('#bairro').val(),
+      cidade: $('#cidade').val(),
+      estado: $('#estado').val(),
+      cep: $('#cep').val(),
+      rg: $('#rg').val(),
+      cpf: $('#cpf').val(),
+      celular: $('#celular').val(),
+      profissao: $('#profissao').val(),
+      email: $('#email').val(),
+      dataNascimento: $('#dataNascimento').val(),
+      escolaridade: $('#escolaridade').val(),
+      ligacaoComMusica: $('#ligacaoComMusica').val(),
+      classificacaoVocal: $('#classificacaoVocal').val(),
+      comoSoube: $('#comoSoube').val(),
+      tipoCoral: $('#tipoCoral').val(),
+      status: $('#status').val(),
+      genero: $('#genero').val(),
+      dataDesistencia: $('#dataDesistencia').val(),
+      dataCadastro: $('#dataCadastro').val(),
+      recebeBeneficio: $('#recebeBeneficio').val(),
+      usoImagem: $('#usoImagem').val(),
+      tipoResponsavel: $('#tipoResponsavel').val(),
+      responsavel: $('#responsavel').val(),
+      nomePai: $('#nomePai').val(),
+      nomeMae: $('#nomeMae').val()
+    };
+
+    // Chamar a função do servidor para salvar os dados
+    google.script.run.withSuccessHandler(function(response) {
+      // Exibir feedback visual
+      $('#mensagemSucesso').show();
+      // Limpar o formulário após o sucesso
+      $('#formCadastro')[0].reset();
+      // Fechar o modal após alguns segundos
+      setTimeout(function() {
+        fecharModal(); // Fechar o modal após o sucesso
+      }, 1000);
+      carregarDadosCadastro(); // Atualizar a tabela de cadastro
+    }).withFailureHandler(function(error) {
+      console.error('Erro ao salvar os dados:', error);
+      alert('Ocorreu um erro ao salvar os dados. Por favor, tente novamente.');
+    }).salvarCadastroNovo(dados); // Enviar os dados para o servidor
+  });
+
+  // Função para abrir o modal de edição e passar o índice da linha junto
+  function editarCadastro(nome, cpf, linhaIndice) {
+    linhaIndiceGlobal = linhaIndice; // Armazenar o índice da linha
+
+    // Função para buscar os dados completos pelo CPF ou nome
+    var dadosEncontrados = buscarDadosPorCpfOuNome(cpf, nome);
+
+    if (dadosEncontrados) {
+      // Abrir o modal de edição
+      $('#modalEditarCadastro').show();
+      aplicarMascaras();
+
+      // Preencher os campos no modal com os dados capturados
+      $('#editarNomeCompleto').val(dadosEncontrados.NomeCompleto);
+      $('#editarEndereco').val(dadosEncontrados.Endereco);
+      $('#editarBairro').val(dadosEncontrados.bairro);
+      $('#editarCidade').val(dadosEncontrados.cidade);
+      $('#editarEstado').val(dadosEncontrados.estado);
+      $('#editarCEP').val(dadosEncontrados.cep);
+      $('#editarRG').val(dadosEncontrados.RG);
+      $('#editarCPF').val(dadosEncontrados.CPF);
+      $('#editarCelular').val(dadosEncontrados.Celular);
+      $('#editarProfissao').val(dadosEncontrados.Profissao);
+      $('#editarEmail').val(dadosEncontrados.Email);
+
+      // Converter datas para o formato correto yyyy-mm-dd
+      $('#editarDataNascimento').val(formatarData(dadosEncontrados.dataNascimento));
+      $('#editarDataCadastro').val(formatarData(dadosEncontrados.dataCadastro));
+      $('#editarDataDesistencia').val(formatarData(dadosEncontrados.dataDesistencia));
+
+      // Preencher o status automaticamente com base na data de desistência
+      if (dadosEncontrados.dataDesistencia) {
+        $('#editarStatus').val('Desistente');
+      } else {
+        $('#editarStatus').val('Ativo');
+      }
+
+      // Preencher os campos dropdown
+      $('#editarEscolaridade').val(dadosEncontrados.Escolaridade);
+      $('#editarLigacaoComMusica').val(dadosEncontrados.ligacaoComMusica);
+      $('#editarClassificacaoVocal').val(dadosEncontrados.classificacaoVocal);
+      $('#editarComoSoube').val(dadosEncontrados.comoSoube);
+      $('#editarTipoCoral').val(dadosEncontrados.tipoCoral);
+      $('#editarGenero').val(dadosEncontrados.genero);
+      $('#editarRecebeBeneficio').val(dadosEncontrados.recebeBeneficio || '');
+      $('#editarusoImagem').val(dadosEncontrados.usoImagem || '');
+      $('#tipoResponsavelEditar').val(dadosEncontrados.tipoResponsavel || '');
+      $('#editarresponsavel').val(dadosEncontrados.responsavel || '');
+      $('#editarNomePai').val(dadosEncontrados.nomePai);
+      $('#editarNomeMae').val(dadosEncontrados.nomeMae);
+
+      // Atualizar exibição do campo "Nome do Responsável" se necessário
+      atualizarExibicaoResponsavelEditar();
+
+      // Adicionar o evento de submit ao formulário de edição
+      $('#formEditarCadastro').off('submit').on('submit', function(event) {
+        event.preventDefault();
+
+        var dadosEditados = {
+          nomeCompleto: $('#editarNomeCompleto').val(),
+          endereco: $('#editarEndereco').val(),
+          bairro: $('#editarBairro').val(),
+          cidade: $('#editarCidade').val(),
+          estado: $('#editarEstado').val(),
+          cep: $('#editarCEP').val(),
+          rg: $('#editarRG').val(),
+          cpf: $('#editarCPF').val(),
+          celular: $('#editarCelular').val(),
+          profissao: $('#editarProfissao').val(),
+          email: $('#editarEmail').val(),
+          dataNascimento: $('#editarDataNascimento').val(),
+          escolaridade: $('#editarEscolaridade').val(),
+          ligacaoComMusica: $('#editarLigacaoComMusica').val(),
+          classificacaoVocal: $('#editarClassificacaoVocal').val(),
+          comoSoube: $('#editarComoSoube').val(),
+          tipoCoral: $('#editarTipoCoral').val(),
+          status: $('#editarStatus').val(),
+          genero: $('#editarGenero').val(),
+          dataDesistencia: $('#editarDataDesistencia').val(),
+          dataCadastro: $('#editarDataCadastro').val(),
+          recebeBeneficio: $('#editarRecebeBeneficio').val(),
+          usoImagem: $('#editarusoImagem').val(),
+          tipoResponsavel: $('#tipoResponsavelEditar').val(),
+          responsavel: $('#editarresponsavel').val(),
+          nomePai: $('#editarNomePai').val(),
+          nomeMae: $('#editarNomeMae').val()
+        };
+
+        // Chamar a função para enviar os dados ao servidor
+        enviarEdicaoParaServidor(linhaIndiceGlobal, dadosEditados);
+      });
+    } else {
+      alert('Erro: CPF ou Nome não encontrado nos dados.');
+    }
+  }
+
+  // Função auxiliar para buscar os dados pelo CPF ou nome
+  function buscarDadosPorCpfOuNome(cpf, nome) {
+    // Tentar encontrar o CPF nos dados completos
+    var dados = dadosCompleto.find(function(item) {
+      return item.CPF === cpf;
+    });
+
+    // Se não encontrou pelo CPF ou CPF estiver vazio, buscar pelo nome
+    if (!dados || !cpf) {
+      dados = dadosCompleto.find(function(item) {
+        return item.NomeCompleto === nome;
+      });
+    }
+
+    return dados;
+  }
+
+  function enviarEdicaoParaServidor(linha, dados) {
+    google.script.run.withSuccessHandler(function(response) {
+      if (response.success) {
+        alert("Dados atualizados com sucesso.");
+        fecharModal(); // Fechar o modal de edição
+        carregarDadosCadastro(); // Recarregar os dados na tabela
+      } else {
+        console.error("Erro ao editar os dados:", response.message);
+        alert("Erro ao editar os dados: " + response.message);
+      }
+    }).withFailureHandler(function(error) {
+      console.error("Erro ao conectar com o servidor:", error);
+      alert("Erro ao conectar com o servidor. Por favor, tente novamente.");
+    }).editarCadastro(linha, dados); // Chama a função no servidor
+  }
+
+  // Função para converter dd-mm-yyyy para yyyy-mm-dd
+  function formatarData(data) {
+    if (!data) return ''; // Se não houver data, retornar string vazia
+    const partes = data.split('-');
+    return `${partes[2]}-${partes[1]}-${partes[0]}`; // Retorna no formato yyyy-mm-dd
+  }
+
+  // Função para interligar editarDataDesistencia e editarStatus
+  $('#editarDataDesistencia').on('change', function() {
+    var dataDesistencia = $(this).val(); // Obtém o valor da data
+    if (dataDesistencia) {
+      // Se a data for preenchida, o status muda para 'Desistente'
+      $('#editarStatus').val('Desistente');
+    } else {
+      // Se a data for removida, o status volta para 'Ativo'
+      $('#editarStatus').val('Ativo');
+    }
+  });
+
+  // Evento para monitorar mudanças na caixa de seleção tipoResponsavel
+  const tipoResponsavel = document.getElementById('tipoResponsavel');
+  if (tipoResponsavel) {
+    tipoResponsavel.addEventListener('change', function() {
+      const responsavelcontainer = document.getElementById('responsavelcontainer');
+      const responsavelInput = document.getElementById('responsavel');
+
+      if (responsavelcontainer && responsavelInput) {
+        if (this.value !== "") {
+          responsavelcontainer.style.display = 'block';
+          responsavelInput.focus();
+          responsavelInput.style.border = '2px solid yellow'; // Efeito de borda amarela
+        } else {
+          responsavelcontainer.style.display = 'none';
+          responsavelInput.style.border = ''; // Remover efeito de borda
+        }
+      }
+    });
+  }
+
+  // Evento para monitorar mudanças na caixa de seleção tipoResponsavelEditar
+  const tipoResponsavelEditar = document.getElementById('tipoResponsavelEditar');
+  if (tipoResponsavelEditar) {
+    tipoResponsavelEditar.addEventListener('change', atualizarExibicaoResponsavelEditar);
+  }
+
+  // Função para atualizar a exibição do campo "Nome do Responsável" no modal de edição
+  function atualizarExibicaoResponsavelEditar() {
+    const editarResponsavelContainer = document.getElementById('editarResponsavelContainer');
+    const editarResponsavelInput = document.getElementById('editarresponsavel');
+
+    if (editarResponsavelContainer && editarResponsavelInput) {
+      if (tipoResponsavelEditar.value !== "") {
+        editarResponsavelContainer.style.display = 'block';
+        editarResponsavelInput.focus();
+        editarResponsavelInput.style.border = '2px solid yellow'; // Efeito de borda amarela
+      } else {
+        editarResponsavelContainer.style.display = 'none';
+        editarResponsavelInput.style.border = ''; // Remover efeito de borda
+      }
+    }
+  }
+
+  // Evento para monitorar mudanças na caixa de seleção detalhesTipoResponsavel
+const detalhesTipoResponsavel = document.getElementById('detalhesTipoResponsavel');
+if (detalhesTipoResponsavel) {
+  detalhesTipoResponsavel.addEventListener('change', atualizarExibicaoResponsavelDetalhes);
+}
+
+// Função para atualizar a exibição do campo "Nome do Responsável" no modal de detalhes
+function atualizarExibicaoResponsavelDetalhes() {
+  const detalhesResponsavelContainer = document.getElementById('detalhesResponsavelContainer');
+  const detalhesResponsavelInput = document.getElementById('detalhesResponsavel');
+
+  if (detalhesResponsavelContainer && detalhesResponsavelInput) {
+    if (detalhesTipoResponsavel.value !== "") {
+      detalhesResponsavelContainer.style.display = 'block';
+      detalhesResponsavelInput.focus();
+      detalhesResponsavelInput.style.border = '2px solid yellow'; // Efeito de borda amarela
+    } else {
+      detalhesResponsavelContainer.style.display = 'none';
+      detalhesResponsavelInput.style.border = ''; // Remover efeito de borda
+    }
+  }
+}
+
+
+
+  // Função para buscar endereço pelo CEP no cadastro
+  $('#cep').on('blur', function() {
+    var cep = $(this).val().replace(/\D/g, '');
+    if (cep.length === 8) {
+      buscarEnderecoPorCEP(cep, function(endereco) {
+        if (endereco) {
+          $('#endereco').val(endereco.street);
+          $('#bairro').val(endereco.neighborhood);
+          $('#cidade').val(endereco.city);
+          $('#estado').val(endereco.state);
+        } else {
+          alert('CEP não encontrado.');
+        }
+      });
+    }
+  });
+
+  // Função para buscar endereço pelo CEP na edição
+  $('#editarCEP').on('blur', function() {
+    var cep = $(this).val().replace(/\D/g, '');
+    if (cep.length === 8) {
+      buscarEnderecoPorCEP(cep, function(endereco) {
+        if (endereco) {
+          $('#editarEndereco').val(endereco.street);
+          $('#editarBairro').val(endereco.neighborhood);
+          $('#editarCidade').val(endereco.city);
+          $('#editarEstado').val(endereco.state);
+        } else {
+          alert('CEP não encontrado.');
+        }
+      });
+    }
+  });
+
+  // Função para buscar o endereço pela API
+  function buscarEnderecoPorCEP(cep, callback) {
+    $.ajax({
+      url: 'https://brasilapi.com.br/api/cep/v1/' + cep,
+      method: 'GET',
+      dataType: 'json',
+      success: function(data) {
+        callback(data);
+      },
+      error: function() {
+        callback(null);
+      }
+    });
+  }
+
+  // Função para atualizar o contador de novos registros
+  function atualizarContadorNovosRegistros() {
+    google.script.run.withSuccessHandler(function(count) {
+      $('#notification-count').text(count);
+    }).withFailureHandler(function(error) {
+      console.error('Erro ao obter contador de novos registros:', error);
+    }).obterContadorNovosRegistros();
+  }
+
+  // Chamar a função ao carregar a página
+  atualizarContadorNovosRegistros();
+
+  // Função para abrir o modal com os novos registros
+  window.abrirNovosRegistros = function() {
+    // Chamar função para obter os novos registros
+    google.script.run.withSuccessHandler(function(data) {
+      // Preencher a tabela com os novos registros
+      if ($.fn.dataTable.isDataTable('#tabelaNovosRegistros')) {
+        $('#tabelaNovosRegistros').DataTable().clear().destroy();
+      }
+
+      // Formatar datas para o formato 'dd-mm-yyyy'
+      data.forEach(function(item) {
+        item.dataNascimento = formatarDataParaBR(item.dataNascimento);
+        item.dataCadastro = formatarDataParaBR(item.dataCadastro);
+      });
+
+      var tabelaNovosRegistros = $('#tabelaNovosRegistros').DataTable({
+        data: data,
+        columns: [
+          {
+            data: 'NomeCompleto',
+            render: function(data, type, row) {
+              return '<a href="#" class="link-nome-registro" data-id="' + row.id + '">' + data + '</a>';
+            }
+          },
+          { data: 'Celular' },
+          { data: 'dataNascimento' },
+          { data: 'dataCadastro' },
+          { data: 'tipoCoral' }
+        ],
+        pageLength: 5,
+        searching: false,
+        paging: false,
+        info: false,
+        ordering: false
+      });
+
+      // Verificar se a tabela foi inicializada
+        console.log('Tabela de Novos Registros:', tabelaNovosRegistros);
+
+        // Evento de clique no nome do registro 
+        $('#tabelaNovosRegistros tbody').off('click').on('click', '.link-nome-registro', function(event) {
+          event.preventDefault();
+          
+          // Logar o elemento clicado
+          console.log('Elemento clicado:', this);
+          
+          // Capturar a linha da tabela onde o clique ocorreu
+          var $row = $(this).parents('tr');
+          console.log('Linha da tabela:', $row);
+          
+          // Capturar os dados da linha clicada
+          var data = tabelaNovosRegistros.row($row).data();
+          console.log('Dados capturados no clique:', data);
+          
+          // Verificar se os dados foram capturados corretamente
+          if (data) {
+            // Chamar a função para abrir os detalhes do registro
+            abrirDetalhesRegistro(data);
+          } else {
+            console.error('Nenhum dado foi encontrado para a linha clicada.');
+          }
+        });
+
+
+      // Abrir o modal
+      $('#modalNovosRegistros').show();
+    }).withFailureHandler(function(error) {
+      console.error('Erro ao obter novos registros:', error);
+    }).obterNovosRegistros();
+  };
+
+  // Função para fechar o modal de novos registros
+  window.fecharModalNovosRegistros = function() {
+    $('#modalNovosRegistros').hide();
+  };
+
+  // Função para abrir os detalhes do registro
+function abrirDetalhesRegistro(dados) {
+  console.log('Dados recebidos em abrirDetalhesRegistro:', dados);
+
+  // Preencher os campos do formulário com os dados do registro
+  $('#detalhesNomeCompleto').val(dados.NomeCompleto);
+  $('#detalhesCEP').val(dados.cep);
+  $('#detalhesEndereco').val(dados.Endereco);
+  $('#detalhesBairro').val(dados.bairro);
+  $('#detalhesCidade').val(dados.cidade);
+  $('#detalhesUF').val(dados.uf);
+  $('#detalhesRG').val(dados.RG);
+  $('#detalhesCPF').val(dados.CPF);
+  $('#detalhesCelular').val(dados.Celular);
+  $('#detalhesProfissao').val(dados.Profissao);
+  $('#detalhesEmail').val(dados.Email);
+  $('#detalhesDataNascimento').val(formatarDataParaInput(dados.dataNascimento));
+  $('#detalhesEscolaridade').val(dados.Escolaridade);
+  $('#detalhesLigacaoComMusica').val(dados.ligacaoComMusica);
+  $('#detalhesClassificacaoVocal').val(dados.classificacaoVocal);
+  $('#detalhesComoSoube').val(dados.comoSoube);
+  $('#detalhesTipoCoral').val(dados.tipoCoral);
+  $('#detalhesStatus').val(dados.status);
+  $('#detalhesGenero').val(dados.genero);
+  $('#detalhesDataDesistencia').val(formatarDataParaInput(dados.dataDesistencia));
+  $('#detalhesDataCadastro').val(formatarDataParaInput(dados.dataCadastro));
+  $('#detalhesRecebeBeneficio').val(dados.recebeBeneficio);
+  $('#detalhesUsoImagem').val(dados.usoImagem);
+  $('#detalhesTipoResponsavel').val(dados.tipoResponsavel);
+  $('#detalhesResponsavel').val(dados.responsavel);
+  $('#detalhesNomePai').val(dados.nomePai);
+  $('#detalhesNomeMae').val(dados.nomeMae);
+  // Armazenar o ID do registro para uso posterior
+  $('#formDetalhesRegistro').data('registroId', dados.id);
+
+  // Aplicar máscaras nos campos
+  aplicarMascarasDetalhes();
+
+  // Atualizar exibição do campo "Nome do Responsável" se necessário
+  atualizarExibicaoResponsavelDetalhes();
+
+
+  // Abrir o modal de detalhes
+  $('#modalDetalhesRegistro').show();
+}
+
+
+  // Função para aplicar máscaras nos campos do modal de detalhes
+  function aplicarMascarasDetalhes() {
+    $('#detalhesCPF').inputmask('999.999.999-99');
+    $('#detalhesCelular').inputmask('(99) 99999-9999');
+    $('#detalhesCEP').inputmask('99999-999');
+  }
+
+  // Função para transferir o registro
+  window.transferirRegistro = function() {
+    // Obter o ID do registro
+    var registroId = $('#formDetalhesRegistro').data('registroId');
+
+    // Obter os dados do formulário
+    var dados = {
+      id: registroId,
+      NomeCompleto: $('#detalhesNomeCompleto').val(),
+      Endereco: $('#detalhesEndereco').val(),
+      RG: $('#detalhesRG').val(),
+      CPF: $('#detalhesCPF').val(),
+      Celular: $('#detalhesCelular').val(),
+      Profissao: $('#detalhesProfissao').val(),
+      Email: $('#detalhesEmail').val(),
+      dataNascimento: $('#detalhesDataNascimento').val(),
+      Escolaridade: $('#detalhesEscolaridade').val(),
+      ligacaoComMusica: $('#detalhesLigacaoComMusica').val(),
+      classificacaoVocal: $('#detalhesClassificacaoVocal').val(),
+      comoSoube: $('#detalhesComoSoube').val(),
+      tipoCoral: $('#detalhesTipoCoral').val(),
+      status: $('#detalhesStatus').val(),
+      genero: $('#detalhesGenero').val(),
+      dataDesistencia: $('#detalhesDataDesistencia').val(),
+      dataCadastro: $('#detalhesDataCadastro').val(),
+      recebeBeneficio: $('#detalhesRecebeBeneficio').val(),
+      usoImagem: $('#detalhesUsoImagem').val(),
+      tipoResponsavel: $('#detalhesTipoResponsavel').val(),
+      responsavel: $('#detalhesResponsavel').val(),
+      nomePai: $('#detalhesNomePai').val(),
+      nomeMae: $('#detalhesNomeMae').val(),
+      bairro: $('#detalhesBairro').val(),
+      cidade: $('#detalhesCidade').val(),
+      uf: $('#detalhesUF').val(),
+      cep: $('#detalhesCEP').val()
+    };
+
+    // Chamar a função do servidor para transferir o registro
+    google.script.run.withSuccessHandler(function(response) {
+      if (response.success) {
+        alert('Registro transferido com sucesso.');
+
+        // Fechar o modal de detalhes
+        fecharModalDetalhesRegistro();
+
+        // Remover o registro da tabela de novos registros
+        var tabela = $('#tabelaNovosRegistros').DataTable();
+        tabela.row(function(idx, data, node) {
+          return data.id === registroId;
+        }).remove().draw();
+
+        // Atualizar o contador de novos registros
+        atualizarContadorNovosRegistros();
+      } else {
+        alert('Erro ao transferir registro: ' + response.message);
+      }
+    }).withFailureHandler(function(error) {
+      console.error('Erro ao transferir registro:', error);
+      alert('Erro ao transferir registro. Por favor, tente novamente.');
+    }).transferirRegistroParaAluno(dados);
+  };
+
+  // Função para fechar o modal de detalhes
+  window.fecharModalDetalhesRegistro = function() {
+    $('#modalDetalhesRegistro').hide();
+    $('#formDetalhesRegistro')[0].reset();
+  };
+
+  // Função para formatar data para 'dd-mm-yyyy'
+  function formatarDataParaBR(dataString) {
+    if (!dataString) return '';
+    var partes = dataString.split('-');
+    return partes[2] + '-' + partes[1] + '-' + partes[0];
+  }
+
+ function formatarDataParaInput(dataString) {
+  console.log('Iniciando formatarDataParaInput com dataString:', dataString);
+  if (!dataString) {
+    console.log('dataString é nula ou vazia.');
+    return '';
+  }
+
+  var dateObj;
+  // Verificar se a data está no formato 'dd-mm-yyyy' ou 'dd/mm/yyyy'
+  var regexDDMMYYYY = /^(\d{2})[-\/](\d{2})[-\/](\d{4})$/;
+  var partes = dataString.match(regexDDMMYYYY);
+  if (partes) {
+    // Converter para objeto Date
+    dateObj = new Date(partes[3], partes[2] - 1, partes[1]);
+  } else {
+    // Tentar converter diretamente
+    dateObj = new Date(dataString);
+  }
+
+  if (!isNaN(dateObj.getTime())) {
+    // Formatar para 'yyyy-mm-dd'
+    var ano = dateObj.getFullYear();
+    var mes = ('0' + (dateObj.getMonth() + 1)).slice(-2);
+    var dia = ('0' + dateObj.getDate()).slice(-2);
+    var dataFormatada = ano + '-' + mes + '-' + dia;
+    console.log('Data formatada para input: ', dataFormatada);
+    return dataFormatada;
+  } else {
+    console.log('Data inválida após tentativa de parsing.');
+    return '';
+  }
+}
+  // Funções iniciais chamadas ao carregar a página
+  carregarDadosCadastro(); // Carrega os dados da tabela quando a página é carregada
+  aplicarMascaras();       // Aplica as máscaras quando a página é carregada
+});
+
+</script>
+

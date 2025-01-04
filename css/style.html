@@ -1,0 +1,1223 @@
+<style>
+  /* Import de fontes e ícones */
+  @import url('https://fonts.googleapis.com/css?family=Roboto&display=swap');
+  @import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+ 
+
+@media (max-width: 1200px) { /* Large Screens (Desktops menores) */
+    .main-container {
+        gap: 15px;
+    }
+
+    .month-container .mes-button {
+        font-size: 13px;
+    }
+
+    .checkbox-label {
+        font-size: 15px;
+    }
+
+    .calendar-container {
+        width: 360px;
+        height: 190px;
+    }
+}
+
+@media (max-width: 992px) { /* Medium Screens (Tablets em modo paisagem) */
+    .main-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .calendar-container, .TableFrequencia-container {
+        width: 90%;
+        margin: 0 auto;
+    }
+
+
+    .month-container .mes-button {
+        font-size: 12px;
+    }
+
+    .modal-horarios input[type="time"] {
+        width: 90px;
+    }
+
+    .btn-save, .btn-close {
+        padding: 10px 18px;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 768px) { /* Small Screens (Tablets em modo retrato) */
+    .main-container {
+        flex-direction: column;
+        padding: 15px;
+    }
+
+    .calendar-container, .TableFrequencia-container {
+        width: 100%;
+        margin: 0;
+    }
+
+    .sidebar-left {
+        width: 100%;
+        padding: 0;
+    }
+
+    .month-container .mes-button {
+        font-size: 11px;
+        padding: 8px;
+    }
+
+    .btn-save, .btn-close {
+        font-size: 0.8rem;
+        padding: 8px 16px;
+    }
+
+    #studentTable th, #studentTable td {
+        padding: 8px;
+    }
+}
+
+@media (max-width: 576px) { /* Extra Small Screens (Telefones) */
+    .main-container {
+        padding: 10px;
+    }
+
+    .calendar-container {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+
+    .TableFrequencia-container {
+        width: 100%;
+    }
+
+    .month-container .mes-button {
+        font-size: 10px;
+        padding: 6px;
+    }
+
+    .checkbox-label {
+        font-size: 14px;
+    }
+
+    .modal-horarios label {
+        font-size: 0.9rem;
+    }
+
+    .modal-header h3 {
+        font-size: 1.2rem;
+    }
+
+    #studentTable th, #studentTable td {
+        font-size: 0.9rem;
+        padding: 6px;
+    }
+
+    .filter-container {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .filter-container label {
+        font-size: 0.9rem;
+    }
+
+    .filter-container input {
+        width: 100%;
+    }
+}
+
+
+:root {
+  /* Variáveis de cores */
+  --primary-bg-color: #e3e9f7;
+  --secondary-bg-color: #ffffff;
+  --highlight-color: #4f46e5;
+  --border-color: #ddd;
+  --text-color: #0a0a0a;
+  --footer-bg-color: DarkSalmon;
+  --footer-text-color: white;
+
+  /* Tamanhos de fonte responsivos usando clamp() */
+  --font-size-small: clamp(0.9rem, 1vw, 1.1rem);
+  --font-size-medium: clamp(1rem, 2vw, 1.5rem);
+  --font-size-large: clamp(1.2rem, 3vw, 2rem);
+
+  /* Espaçamentos responsivos usando clamp() */
+  --spacing-small: clamp(5px, 1vw, 10px);
+  --spacing-medium: clamp(10px, 2vw, 20px);
+  --spacing-large: clamp(15px, 3vw, 30px);
+  
+  /* Cores Principais */
+  --primary-color: #4f46e5;    /* Azul principal */
+  --secondary-color: #6b73ff;  /* Azul secundário */
+  --accent-color: #b381ff;     /* Roxo accent */
+  
+  /* Cores de Estado */
+  --success-color: #28a745;    /* Verde sucesso */
+  --error-color: #dc3545;      /* Vermelho erro */
+  --warning-color: #ffc107;    /* Amarelo aviso */
+  --info-color: #17a2b8;       /* Azul info */
+  
+  /* Cores Neutras */
+  --background-color: #f8f9fa;
+  --surface-color: #ffffff;
+  --text-primary: #333333;
+  --text-secondary: #666666;
+  --border-color: #dee2e6;
+
+  /* Tipografia */
+  --font-primary: 'Roboto', sans-serif;
+  --font-secondary: 'Poppins', sans-serif;
+  
+  /* Tamanhos de Fonte */
+  --text-xs: 0.75rem;    /* 12px */
+  --text-sm: 0.875rem;   /* 14px */
+  --text-base: 1rem;     /* 16px */
+  --text-lg: 1.125rem;   /* 18px */
+  --text-xl: 1.25rem;    /* 20px */
+  --text-2xl: 1.5rem;    /* 24px */
+  
+  /* Espaçamentos */
+  --space-xs: 0.25rem;   /* 4px */
+  --space-sm: 0.5rem;    /* 8px */
+  --space-md: 1rem;      /* 16px */
+  --space-lg: 1.5rem;    /* 24px */
+  --space-xl: 2rem;      /* 32px */
+
+  /* Sombras */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+
+  /* Border Radius */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 1rem;
+
+  /* Transições */
+  --transition-fast: 150ms ease;
+  --transition-normal: 300ms ease;
+  --transition-slow: 500ms ease;
+}
+
+/* =========================
+     Reset & Base
+     ========================= */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+  /* =========================
+     MAIN / CONTENT (Desktop)
+     ========================= */
+  main,
+  #content {
+    flex-grow: 1;
+    padding: var(--spacing-medium);
+    //background-color: var(--primary-bg-color);
+    overflow: auto;
+    z-index: 1;
+    transition: margin-left 0.5s ease;
+    min-width: 300px;
+
+    /* Se a sidebar ficar "relative" no Desktop, 
+       podemos aplicar uma margem para não sobrepor */
+    margin-left: 87px; /* Largura “fechada” da sidebar */
+  }
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    //background-color: var(--primary-bg-color);
+    font-family: var(--font-primary);
+    color: var(--text-primary);
+    //background-color: var(--background-color);
+    line-height: 1.5;
+  }
+
+  .header, .footer {
+    text-align: center;
+    padding: var(--spacing-small);
+    background-color: var(--secondary-bg-color);
+  }
+
+     /* Estilos para o Cabeçalho do Dashboard */
+   .header-content {
+        background-color: #ffffff;
+        color: rgb(186, 15, 228);
+        //padding: 15px 20px;
+        text-align: center;
+        width: 100%;
+        box-sizing: border-box;
+        border-bottom: 2px solid #b44fea;
+    }
+
+
+  .footer {
+    background-color: var(--footer-bg-color);
+    color: var(--footer-text-color);
+    padding: var(--spacing-small);
+    font-size: var(--font-size-small);
+    position: relative;
+    width: 100%;
+  }
+
+.main-container {
+    display: flex;
+    flex: 1;
+  }
+
+ /* =========================
+     Sidebar (ajustado)
+     ========================= */
+
+
+  /* Sidebar padrão */
+#sidebar {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background-color: #f8f9fa; /* Cor de fundo mais suave */
+  height: 80vh;
+  border-radius: 0px 18px 18px 0px;
+  position: relative;
+  transition: min-width .5s, width .5s, background-color .3s; /* Adiciona transição para a cor de fundo */
+  min-width: 87px;
+  width: 87px;
+  z-index: 2;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); /* Sombra leve para a sidebar */
+}
+
+/* Sidebar expandida */
+#sidebar.open-sidebar {
+  min-width: 200px; /* Aumenta a largura mínima para acomodar textos maiores */
+  width: 200px;
+}
+
+#sidebar_content {
+  padding: var(--spacing-small);
+}
+
+#user {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-small);
+  margin-bottom: var(--spacing-medium);
+}
+
+#user_avatar2 {
+  top: 15px;
+  //padding: 0px;
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 20px;
+}
+
+#user_avatar {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 20px;
+}
+
+#user_infos {
+  display: flex;
+  flex-direction: column;
+}
+
+#user_infos span:last-child {
+  color: #6b6b6b;
+  font-size: var(--font-size-small);
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  padding: var(--spacing-small);
+  cursor: pointer;
+  position: relative;
+  transition: background-color .3s, color .3s; /* Adiciona transição para a cor de fundo e do texto */
+}
+
+/* Estilo ao passar o mouse */
+.menu-item:hover {
+    background-color: #e9ecef; /* Cor de fundo ao passar o mouse */
+}
+/* Rotacionar a seta quando o submenu está aberto */
+.side-item.open > a::after {
+    content: ' ▲'; /* Seta invertida quando o submenu está aberto */
+}
+
+.side-item {
+  position: relative;
+}
+
+.side-item.active {
+  background-color: #007bff; /* Fundo azul para o item ativo */
+  color: white;              /* Cor do texto branca para o item ativo */
+  font-weight: bold;         /* Negrito para o texto do item ativo */
+  border-left: 5px solid #0056b3; /* Barra na esquerda para indicar o item ativo */
+  transition: background-color .3s, color .3s; /* Adiciona transição para a cor de fundo e do texto */
+}
+
+.side-item:hover:not(.active),
+#logout_btn:hover {
+  background-color: #e9ecef; /* Cor de fundo ao passar o mouse */
+}
+
+.side-item a {
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-color);
+  font-size: var(--font-size-small);
+}
+
+/* Estilo para o item de menu ativo */
+.side-item a.active {
+    background-color: #007bff; /* Fundo azul para o item ativo */
+    color: white;              /* Cor do texto branca para o item ativo */
+    font-weight: bold;         /* Negrito para o texto do item ativo */
+    border-left: 5px solid #0056b3; /* Barra na esquerda para indicar o item ativo */
+}
+
+.side-item a i {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+}
+
+#logout {
+  border-top: 1px solid var(--primary-bg-color);
+  padding: var(--spacing-small);
+}
+
+#logout_btn {
+  border: none;
+  padding: var(--spacing-small);
+  font-size: var(--font-size-small);
+  display: flex;
+  gap: var(--spacing-small);
+  align-items: center;
+  border-radius: 8px;
+  text-align: start;
+  cursor: pointer;
+  background-color: transparent;
+}
+
+#open_btn {
+  position: absolute;
+  top: 30px;
+  right: -10px;
+  background-color: var(--highlight-color);
+  color: var(--footer-text-color);
+  border-radius: 100%;
+  width: 20px;
+  height: 20px;
+  border: none;
+  cursor: pointer;
+  z-index: 3;
+}
+
+#open_btn_icon {
+  transition: transform .3s ease;
+}
+
+.open-sidebar #open_btn_icon {
+  transform: rotate(180deg);
+}
+
+
+.item-description {
+  width: 0px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 16px;
+  transition: width .6s;
+  height: 0px;
+}
+
+#sidebar.open-sidebar .item-description {
+  width: 150px;
+  height: auto;
+}
+
+#sidebar.open-sidebar .side-item a {
+  justify-content: flex-start;
+  gap: var(--spacing-small);
+}
+
+/* Responsividade para dispositivos móveis (Samsung S8+ e similares) */
+@media (max-width: 600px) {
+  /* Ajuste da sidebar para se esconder inicialmente */
+  #sidebar {
+    position: fixed;
+    top: 0;
+    left: -100px;
+    height: 100vh;
+    transition: left 0.3s ease-in-out;
+  }
+
+  #sidebar.open-sidebar {
+    left: 0;
+    min-width: 200px;
+    width: 200px;
+  }
+
+  main {
+    margin-left: 0;
+    padding: var(--spacing-small);
+  }
+
+  /* Ajustes nos itens da sidebar */
+  #sidebar .side-item a {
+    justify-content: flex-start;
+    gap: var(--spacing-small);
+    font-size: var(--font-size-small);
+  }
+
+  /* Tamanho dos elementos na sidebar */
+  #user_avatar {
+    width: 40px;
+    height: 40px;
+  }
+
+  /* Ajuste para o botão de abrir/fechar sidebar */
+  #open_btn {
+    top: 10px;
+    right: -10px;
+    width: 25px;
+    height: 25px;
+  }
+
+  /* Ajuste no conteúdo principal */
+  main {
+    padding: var(--spacing-small);
+  }
+
+  /* Redimensionar fontes para telas menores */
+  body {
+    font-size: var(--font-size-small);
+  }
+
+  .footer {
+    font-size: var(--font-size-small);
+  }
+
+  /* Defina um escopo para os estilos da página principal */
+.main-page .main-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  background-color: var(--secondary-bg-color);
+  text-align: center;
+}
+
+.main-page .header-content {
+  display: flex;
+  align-items: center;
+  gap: 20px; /* Espaçamento entre a imagem e o texto */
+}
+
+.main-page #user_avatar2 {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.main-page #animated-title {
+  font-family: 'Poppins', sans-serif;
+  font-size: 2.5rem;
+  font-weight: bold;
+  background: linear-gradient(90deg, #6b73ff, #4f46e5, #9357e5, #b381ff);
+  background-size: 300%;
+  color: #fff;
+  animation: gradient-animation 4s infinite;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin: 0;
+}
+
+/* Animação do gradiente */
+@keyframes gradient-animation {
+  0% {
+    background-position: 0%;
+  }
+  50% {
+    background-position: 100%;
+  }
+  100% {
+    background-position: 0%;
+  }
+}
+
+
+  /* Submenus se comportam como dropdowns */
+  .submenu {
+    position: relative;
+    left: 0;
+    top: 0;
+    width: 100%;
+  }
+
+  .submenu li {
+    padding: 10px 15px;
+  }
+
+  .item-description {
+    font-size: var(--font-size-small);
+  }
+
+  /* Ajuste nos tamanhos das fontes */
+  :root {
+    --font-size-small: clamp(0.8rem, 1vw, 1rem);
+    --font-size-medium: clamp(1rem, 2vw, 1.2rem);
+    --font-size-large: clamp(1.1rem, 3vw, 1.5rem);
+  }
+}
+  /* Estilos para o conteúdo principal */
+  #content {
+    flex: 1;
+  margin-left: 10px;
+  padding: 20px 20px 60px 20px; /* Ajustes para o header e footer */
+  transition: margin-left 0.3s ease;
+  overflow-x: auto; /* Permite rolagem horizontal, se necessário */
+  overflow-y: auto; /* Permite rolagem vertical, se necessário */
+  position: relative; /* Garante que o conteúdo fique dentro dos limites */
+  z-index: 101; /* O conteúdo terá um z-index superior à sidebar */
+}
+
+#content table {
+  width: 100%; /* Garante que a tabela ocupe todo o espaço disponível */
+  max-width: 100%; /* Impede que a tabela ultrapasse o limite do contêiner */
+  table-layout: auto; /* Permite que a tabela ajuste as colunas conforme necessário */
+  overflow-x: auto; /* Permite que a tabela tenha rolagem horizontal */
+}
+
+
+  /* Ajuste quando o menu está oculto */
+  #content.full-width {
+  margin-left: 0; /* Garante que o conteúdo ocupe toda a largura */
+  transition: margin-left 0.3s ease;
+  overflow-x: auto;
+  overflow-y: auto;
+}
+
+  /* Responsividade */
+  @media (max-width: 768px) {
+    .sidebar {
+      width: 200px;
+    }
+
+    #content {
+      margin-left: 200px;
+    }
+
+    /* Ajuste para telas pequenas quando o menu está oculto */
+    #content.full-width {
+  margin-left: 0; /* Garante que o conteúdo ocupe toda a largura */
+  transition: margin-left 0.3s ease;
+  overflow-x: auto;
+  overflow-y: auto;
+}
+  }
+
+  /* Estilos para o modal */
+  .modal {
+    display: none; /* Oculto por padrão */
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.5); /* Tela translúcida */
+  }
+
+  .modal-content {
+    background-color: #fefefe;
+    margin: 5% auto; /* Centralizado verticalmente */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 800px; /* Largura máxima */
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    position: relative;
+  }
+
+  /* Botão de fechar */
+  .close-button {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+
+  .close-button:hover,
+  .close-button:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  /* Estilos do formulário */
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .form-row {
+    background-color: #f5f5f5; /* Cor de fundo cinza claro */
+    padding: 10px;
+    border-radius: 8px; /* Bordas arredondadas para cada linha */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra suave */
+    margin-bottom: 15px; /* Espaçamento entre as linhas */
+    display: flex;
+    flex-direction: row; /* Mantém o label e o input lado a lado */
+    justify-content: space-between;
+    align-items: center;
+}
+
+  /* Efeitos de foco nos inputs */
+  .form-row input:focus {
+    border-color: #66afe9;
+    outline: none;
+    box-shadow: 0 0 8px rgba(102,175,233,0.6);
+  }
+
+  /* Botões */
+  .form-actions {
+    grid-column: span 2;
+    text-align: right;
+    margin-top: 20px;
+  }
+
+  .btn-salvar,
+  .btn-fechar {
+    padding: 10px 20px;
+    margin-left: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .btn-salvar {
+    background-color: #28a745;
+    color: white;
+  }
+
+  .btn-fechar {
+    background-color: #dc3545;
+    color: white;
+  }
+
+/* Estilos aprimorados para todas as linhas (pares e ímpares) */
+.form-row {
+  background-color: #f5f5f5; /* Cor de fundo cinza claro */
+  padding: 10px;
+  border-radius: 8px; /* Bordas arredondadas para cada linha */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra suave */
+  margin-bottom: 15px; /* Espaçamento entre as linhas */
+  display: flex;
+  flex-direction: row; /* Mantém o label e o input lado a lado */
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Estilos gerais para as linhas do formulário */
+.form-row {
+  margin-bottom: 15px; /* Espaçamento entre as linhas */
+  display: flex;
+  flex-direction: row; /* Mantém o label e o input lado a lado */
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Ajuste do label e do input para que fiquem alinhados */
+.form-row label {
+  flex: 1;
+  margin-right: 10px;
+  font-size: 16px;
+  color: #333; /* Cor do texto do label */
+}
+
+.form-row input, .form-row select {
+  flex: 2; /* Faz o input ocupar mais espaço */
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra leve */
+  font-size: 16px;
+  width: 100%; /* Garante que o input preencha o espaço disponível */
+}
+
+/* Ajuste de foco para os inputs e selects */
+.form-row input:focus, .form-row select:focus {
+  border-color: #66afe9;
+  box-shadow: 0 0 10px rgba(102, 175, 233, 0.5);
+  outline: none;
+}
+
+/* Responsividade: Ajustes para telas menores */
+@media (max-width: 600px) {
+  .form-row {
+    flex-direction: column; /* Coloca o label e o input um abaixo do outro em telas pequenas */
+  }
+
+  .form-row label, .form-row input, .form-row select {
+    width: 100%; /* Garante que o input ocupe toda a largura disponível */
+  }
+
+  .form-row:nth-child(even) {
+    padding: 8px;
+  }
+}
+
+/* Estilo para o título <h2> */
+h2 {
+  font-size: 28px; /* Tamanho da fonte para o título */
+  font-weight: 700; /* Negrito */
+  color: #4f46e5; /* Cor moderna */
+  text-align: center; /* Centraliza o título */
+  margin-bottom: 10px; /* Espaçamento inferior entre o título e o botão */
+  position: relative;
+}
+
+/* Estilo para o contêiner que agrupa o título e o botão */
+.titulo-cadastro-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px; /* Espaçamento de 10px entre o título e o botão */
+  margin-bottom: 20px; /* Espaçamento abaixo do container */
+}
+
+/* Estilo para o botão "Cadastrar Novo" */
+#btnCadastrarNovo {
+  background: linear-gradient(45deg, #4f46e5, #6b73ff); /* Gradiente de cores */
+  color: #fff;
+  padding: 12px 25px;
+  font-size: 16px;
+  font-weight: bold;
+  border: none;
+  border-radius: 30px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  position: relative;
+  overflow: hidden;
+}
+
+#btnCadastrarNovo:hover {
+  background: linear-gradient(45deg, #6b73ff, #4f46e5);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+  transform: translateY(-3px);
+}
+
+#btnCadastrarNovo:active {
+  transform: translateY(2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+#btnCadastrarNovo::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 300%;
+  height: 300%;
+  background: rgba(255, 255, 255, 0.2);
+  transition: all 0.75s ease;
+  transform: translate(-50%, -50%) rotate(45deg);
+  opacity: 0;
+  pointer-events: none;
+}
+
+#btnCadastrarNovo:hover::before {
+  opacity: 1;
+  width: 400%;
+  height: 400%;
+}
+/* Garantir que não haja marcadores de lista antes dos itens do menu */
+ul, li {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+/* estilo pagina algazarra */
+    h2 {
+      margin-top: 10px;
+      color: #444;
+    }
+
+    .month-container {
+      display: flex;
+      justify-content: space-around;
+      margin-top: 20px;
+    }
+
+    .month {
+      padding: 10px;
+      border: 1px solid #ddd;
+      cursor: pointer;
+      width: 80px;
+      text-align: center;
+      background-color: #fff;
+      transition: 0.3s ease;
+    }
+
+    .month:hover {
+      background-color: #f0f0f0;
+    }
+
+    .month.active {
+      background-color: #b381ff;
+      color: white;
+    }
+
+    /* Calendário */
+    .calendar {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .day-header {
+      font-weight: bold;
+      padding: 10px;
+      background-color: #ffffbc; /* Cor de fundo para os dias da semana */
+      color: #070705; /* Cor do texto */
+    }
+
+    .day {
+      padding: 20px;
+      background-color: #ffffbc; /* Cor para os dias úteis */
+      color: #070705; /* Cor da fonte */
+      border: 1px solid #ddd;
+      cursor: pointer;
+    }
+
+    .day:hover {
+      background-color: #e3e9f7;
+    }
+
+    /* Estilo especial para finais de semana */
+    .weekend {
+      background-color: #b381ff; /* Cor de fundo para finais de semana */
+      color: #fff; /* Cor da fonte para finais de semana */
+    }
+
+    /* Estilos do modal */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.5);
+    }
+
+    .modal-content {
+      background-color: #fff;
+      padding: 20px;
+      margin: 10% auto;
+      width: 50%;
+      text-align: left;
+      border-radius: 8px;
+    }
+
+    .close-button {
+      float: right;
+      font-size: 24px;
+      cursor: pointer;
+      color: #aaa;
+    }
+
+    .close-button:hover {
+      color: #000;
+    }
+
+    /* Lista de alunos */
+    .student-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    .student-list li {
+      padding: 8px;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .student-list li:last-child {
+      border-bottom: none;
+    }
+
+    /* Hover no mês ativo */
+    .month.active:hover {
+      background-color: #9357e5; /* Efeito hover para o mês ativo */
+      color: #fff;
+    }
+
+    .spinner {
+  border: 16px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 16px solid #3498db;
+  width: 120px;
+  height: 120px;
+  animation: spin 2s linear infinite;
+}
+
+/* Adiciona a borda vermelha para a linha de alunos 'Desistente' */
+.desistente {
+  border: 2px solid #cc3b2c;
+}
+
+/* Você pode adicionar outras estilizações para destacar mais */
+.desistente td {
+  color: #cc3b2c; /* Alterar a cor do texto */
+  background-color: #ffe6e6; /* Fundo levemente destacado */
+}
+
+.menu-item {
+  position: relative;
+}
+
+.menu-item:hover .tooltip {
+  visibility: visible;
+  opacity: 1;
+}
+
+.tooltip {
+  visibility: hidden;
+  width: 150px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+
+  /* Posição */
+  position: absolute;
+  z-index: 1;
+  bottom: 125%; /* Posição acima do ícone */
+  left: 50%;
+  margin-left: -75px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.tooltip::after {
+  content: "";
+  position: absolute;
+  top: 100%; /* Ponta da seta */
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: black transparent transparent transparent;
+}
+
+  .btn {
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+  
+  .btn-cadastrar-novo {
+    background-color: #4CAF50;
+    color: white;
+  }
+  
+  .btn-salvar {
+    background-color: #008CBA;
+    color: white;
+  }
+  
+  .btn-fechar {
+    background-color: #f44336;
+    color: white;
+  }
+
+  /* Estilos para o container do responsável */
+  #responsavelContainer {
+    margin-top: 10px;
+  }
+
+  .loading-spinner {
+    border: 8px solid #f3f3f3;
+    border-top: 8px solid #3498db;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: 100px auto;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  .mensagem-feedback {
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    display: none;
+  }
+  .mensagem-feedback.sucesso {
+    background-color: #d4edda;
+    color: #155724;
+  }
+  .mensagem-feedback.erro {
+    background-color: #f8d7da;
+  }
+
+  .spinner {
+    border: 6px solid #f3f3f3;
+    border-top: 6px solid #3498db;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: auto;
+  }
+
+/* Sistema de Notificações */
+.notification {
+  padding: var(--space-sm) var(--space-md);
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  padding: 15px 20px;
+  border-radius: var(--radius-md);
+  animation: slideIn 0.3s ease-out;
+}
+
+.notification-success {
+  background: var(--success-color);
+  color: white;
+}
+
+.notification-error {
+  background: var(--error-color);
+  color: white;
+}
+  .spinner {
+    border: 6px solid #f3f3f3;
+    border-top: 6px solid #3498db;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: auto;
+  }
+
+
+
+
+/* Cards */
+.card {
+  background: var(--surface-color);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+}
+
+/* Tabelas */
+.table-standard {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+/* Adicionar estilos para form-row com colunas */
+.form-group-responsavel {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-4);
+}
+
+.form-col {
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 768px) {
+  .form-group-responsavel {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Estilos para o ícone de notificação */
+.notification-icon {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  margin-left: 20px;
+}
+
+.notification-icon img {
+  width: 24px;
+  height: 24px;
+}
+
+#notification-count {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  background: red;
+  color: white;
+  border-radius: 50%;
+  padding: 2px 6px;
+  font-size: 12px;
+}
+
+/* Estilos para o link "Consulta CEP" */
+.consulta-cep-link {
+  margin-left: 10px;
+  font-size: 0.9em;
+}
+
+#question3 {
+  width: 272px;   /* define a largura fixa */
+  height: 150px;  /* define a altura fixa */
+}
+
+#question5 {
+  width: 272px;   /* define a largura fixa */
+  height: 150px;  /* define a altura fixa */
+}
+
+</style>

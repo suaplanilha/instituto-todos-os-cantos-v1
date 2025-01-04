@@ -1,0 +1,1274 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <!-- Incluindo a fonte Roboto -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <!-- Incluindo Font Awesome para ícones (opcional) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+    <!-- DataTables Responsive CSS (opcional) -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.dataTables.min.css">
+    
+
+    <!-- css/pesquisaSatisfacao -->
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar (Coluna Esquerda) -->
+        <div class="sidebar">
+            <!-- Cabeçalho Dinâmico da Pesquisa e Dropdown -->
+            <div class="header">
+                <h2>Pesquisa de Satisfação</h2>
+                <h3>Concerto: <span id="concertTitle">Selecione um concerto</span></h3>
+                <h4>Data: <span id="concertDateDisplay">-</span></h4>
+                <div class="input-group">
+                    <label for="concertDropdown">Selecione o Concerto:</label>
+                    <select id="concertDropdown">
+                        <option value="">Carregando...</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Formulário -->
+            <div class="form-container">
+                <!-- Cabeçalho do Formulário -->
+                <div class="input-group">
+                    <label for="concertName">Concerto:</label>
+                    <input type="text" id="concertName" placeholder="Digite o nome do concerto">
+                </div>
+                <div class="input-group">
+                    <label for="concertDateInput">Data:</label>
+                    <input type="date" id="concertDateInput">
+                </div>
+
+                <!-- Formulário de Perguntas -->
+                <div class="card">
+                    <h3>1. Em geral, quão satisfeito(a) você está com o concerto?</h3>
+                    <p>Em uma escala de 0 a 10, sendo 10 a mais alta</p>
+                    <div class="rating-buttons" id="question1">
+                        <!-- Botões de rating -->
+                        <button type="button">0</button>
+                        <button type="button">1</button>
+                        <button type="button">2</button>
+                        <button type="button">3</button>
+                        <button type="button">4</button>
+                        <button type="button">5</button>
+                        <button type="button">6</button>
+                        <button type="button">7</button>
+                        <button type="button">8</button>
+                        <button type="button">9</button>
+                        <button type="button">10</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>2. Quais são as chances de recomendá-lo para amigos ou colegas?</h3>
+                    <p>Em uma escala de 0 a 10, sendo 10 a mais alta</p>
+                    <div class="rating-buttons" id="question2">
+                        <!-- Botões de rating -->
+                        <button type="button">0</button>
+                        <button type="button">1</button>
+                        <button type="button">2</button>
+                        <button type="button">3</button>
+                        <button type="button">4</button>
+                        <button type="button">5</button>
+                        <button type="button">6</button>
+                        <button type="button">7</button>
+                        <button type="button">8</button>
+                        <button type="button">9</button>
+                        <button type="button">10</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>3. Se deu nota de 6 a 0 na pergunta anterior, qual é o principal motivo?</h3>
+                    <textarea id="question3" placeholder="Escreva o motivo aqui..."></textarea>
+                </div>
+
+                <div class="card">
+                    <h3>4. Sobre o local do concerto</h3>
+                    <p>Em uma escala de 0 a 10, sendo 10 a mais alta</p>
+                    <div class="rating-buttons" id="question4">
+                        <!-- Botões de rating -->
+                        <button type="button">0</button>
+                        <button type="button">1</button>
+                        <button type="button">2</button>
+                        <button type="button">3</button>
+                        <button type="button">4</button>
+                        <button type="button">5</button>
+                        <button type="button">6</button>
+                        <button type="button">7</button>
+                        <button type="button">8</button>
+                        <button type="button">9</button>
+                        <button type="button">10</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>5. Em caso de falta de acessibilidade, o que está faltando no local?</h3>
+                    <textarea id="question5" placeholder="Escreva sua opinião aqui..."></textarea>
+                </div>
+
+                <!-- Botão de envio -->
+                <button id="submitButton" class="btn-verde">Enviar Pesquisa</button>
+               
+                <!-- Caixa de mensagens -->
+                <div id="messageBox"></div>
+            </div>
+        </div>
+
+        <!-- Main Content (Coluna Direita) -->
+        <div class="mainContent dashboard-graficos">
+            <button id="exportarPDF" class="btn-exportar btn-verde">Exportar PDF</button>
+            <div class="card-container">
+                <!-- Gráfico 1 -->
+                <div class="card">
+                    <h3>Distribuição por Média de Satisfação</h3>
+                    <canvas id="graficoMediaSatisfacao"></canvas>
+                </div>
+
+                <!-- Gráfico 2 -->
+                <div class="card">
+                    <h3>Total de Participantes por Mês</h3>
+                    <canvas id="graficoTotalParticipanteMes"></canvas>
+                </div>
+                
+                <!-- Gráfico 3 -->
+                <div class="card">
+                    <h3>1. Em geral, quão satisfeito(a) você está com o concerto?</h3>
+                    <canvas id="graficoMediaPorNota"></canvas>
+                </div>
+                
+                <!-- Gráfico 4 -->
+                <div class="card">
+                    <h3>2. Quais são as chances de recomendá-lo para amigos ou colegas?</h3>
+                    <canvas id="graficoMediaPorNota2"></canvas>
+                </div>
+                
+                <!-- Gráfico 5 -->
+                <div class="card">
+                    <h3>4. Sobre o local do concerto</h3>
+                    <canvas id="graficoMediaPorNota3"></canvas>
+                </div>
+            </div>
+
+            <!-- Título da Tabela -->
+            <div class="titulo-tabela-container">
+                <h2>Pesquisa de Satisfação</h2>
+            </div>
+            
+            <!-- Tabela para exibir os dados -->
+            <table id="tabelaPesquisa" class="display responsive nowrap" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>Motivo</th>
+                        <th>Acessibilidade</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Dados serão inseridos dinamicamente -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Indicador de Carregamento -->
+    <div id="loading-indicator" class="loading-indicator">
+        <p>Gerando PDF...</p>
+    </div>
+
+    <!-- Área de Notificações -->
+    <div id="notificacao" class="notificacao"></div>
+
+    <!-- Incluindo jQuery e DataTables -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- DataTables JS -->
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <!-- DataTables Responsive JS (opcional) -->
+    <script src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>
+    <!-- Incluindo Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+    <!-- Incluindo jsPDF e html2canvas -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script>
+
+       // Registrar o plugin ChartDataLabels
+Chart.register(ChartDataLabels);
+
+$(document).ready(async function() {
+    // ==================== INÍCIO DO DOM READY ====================
+  // Inicializar DataTable
+            const table = $('#tabelaPesquisa').DataTable({
+                responsive: true,
+                paging: true,
+                searching: true,
+                ordering: true,
+                info: true,
+                language: {
+                    url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/Portuguese-Brasil.json'
+                },
+            });
+
+            /**
+             * Função para popular o dropdown 'concertDropdown' com os títulos dos concertos.
+             */
+            function popularDropdownConcertos() {
+                google.script.run.withSuccessHandler(function(titulos) {
+                    const dropdown = $('#concertDropdown');
+                    dropdown.empty(); // Limpa as opções existentes
+
+                    titulos.forEach(function(titulo) {
+                        if (titulo.toLowerCase() === 'selecione o concerto') {
+                            dropdown.append(`<option value="">${titulo}</option>`);
+                        } else {
+                            dropdown.append(`<option value="${titulo}">${titulo}</option>`);
+                        }
+                    });
+                }).getTitulosConcertos();
+            }
+
+            /**
+             * Função para obter e inserir os dados na DataTable com base no filtro selecionado.
+             */
+            function obterDadosPesquisa(selectedConcert = "") {
+                // Chama a função do servidor passando o valor selecionado
+                google.script.run.withSuccessHandler(function(dados) {
+                    // Limpar a tabela antes de inserir novos dados
+                    table.clear();
+
+                    // Inserir os dados recebidos na tabela
+                    dados.forEach(function(item) {
+                        table.row.add([
+                            item.motivo,
+                            item.acessibilidade
+                        ]);
+                    });
+
+                    // Atualizar a tabela para refletir as mudanças
+                    table.draw();
+                }).getDadosPesquisa(selectedConcert);
+            }
+
+            /**
+             * Evento para detectar mudanças no dropdown 'concertDropdown'.
+             */
+            $('#concertDropdown').on('change', function() {
+                const selectedConcert = $(this).val();
+                obterDadosPesquisa(selectedConcert);
+
+                // Preencher automaticamente os campos 'concertName' e 'concertDateInput'
+                if (selectedConcert) {
+                    const concertoData = dadosCache.find(item => item.concerto === selectedConcert);
+                    if (concertoData) {
+                        $('#concertName').val(concertoData.concerto);
+                        const dataParts = concertoData.dataConcerto.split('-');
+                        const formattedDate = `${dataParts[2]}-${dataParts[1]}-${dataParts[0]}`;
+                        $('#concertDateInput').val(formattedDate);
+                    }
+                } else {
+                    $('#concertName').val('');
+                    $('#concertDateInput').val('');
+                }
+            });
+
+            /**
+             * Inicializar o dropdown e carregar os dados da tabela no carregamento da página.
+             */
+            popularDropdownConcertos();
+            obterDadosPesquisa(); // Carrega todos os dados inicialmente
+
+            // Eventos para os botões de rating
+            $('.rating-buttons button').on('click', function() {
+                const parent = $(this).parent();
+                parent.find('button').removeClass('selected');
+                $(this).addClass('selected');
+            });
+
+            // Evento de envio da pesquisa
+            $('#submitButton').on('click', function() {
+                // Lógica para enviar a pesquisa
+                // Exemplo: Coletar dados e enviar para o servidor
+                // ...
+
+                // Exibir mensagem de sucesso
+                $('#messageBox').text('Pesquisa enviada com sucesso!').removeClass('error').addClass('success').show().fadeOut(3000);
+            });
+
+            // Evento de exportar PDF
+            $('#exportarPDF').on('click', function() {
+                // Mostrar o indicador de carregamento
+                $('#loading-indicator').show();
+
+                // Lógica para gerar e exportar o PDF
+                // Exemplo: Capturar a tabela e gráficos e criar um PDF
+                // ...
+
+                // Simulação de atraso para demonstrar o indicador
+                setTimeout(function() {
+                    // Ocultar o indicador de carregamento
+                    $('#loading-indicator').hide();
+
+                    // Exibir notificação de sucesso
+                    $('#notificacao').removeClass('erro').addClass('sucesso').text('PDF exportado com sucesso!').fadeIn().delay(3000).fadeOut();
+                }, 2000);
+            });
+
+    let dadosCache = null;
+    let graficoMediaSatisfacao = null;
+    let graficoTotalParticipanteMes = null;
+    let graficoMediaPorNota = null;
+    let graficoMediaPorNota2 = null; // Novo Gráfico
+    let graficoMediaPorNota3 = null; // Novo Gráfico
+
+    // Função para mostrar o indicador de carregamento
+    function mostrarCarregamento() {
+        $('#loading-indicator').fadeIn(200); // Suaviza a exibição
+        $('body').css('overflow', 'hidden'); // Impede a rolagem da página
+        desabilitarNavegacao();
+        console.log("Indicador de carregamento exibido.");
+    }
+
+    // Função para esconder o indicador de carregamento
+    function esconderCarregamento() {
+        $('#loading-indicator').fadeOut(200); // Suaviza a ocultação
+        $('body').css('overflow', 'auto'); // Restaura a rolagem da página
+        habilitarNavegacao();
+        console.log("Indicador de carregamento ocultado.");
+    }
+
+    // Função para desabilitar elementos de navegação
+    function desabilitarNavegacao() {
+        $('a, button, input, select, textarea').addClass('disabled').attr('disabled', true);
+        console.log("Elementos de navegação desabilitados.");
+    }
+
+    // Função para habilitar elementos de navegação
+    function habilitarNavegacao() {
+        $('a, button, input, select, textarea').removeClass('disabled').attr('disabled', false);
+        console.log("Elementos de navegação habilitados.");
+    }
+
+    // Função para mostrar notificações
+    function mostrarNotificacao(mensagem, tipo) {
+        const notificacao = $('#notificacao');
+        notificacao.removeClass('sucesso erro').addClass(tipo).text(mensagem).fadeIn();
+
+        setTimeout(() => {
+            notificacao.fadeOut();
+        }, 3000);
+    }
+
+    // Função para obter o título dinâmico com base nos filtros
+    function obterTituloDinamico(tituloOriginal) {
+        const filtroCoralUnimed = $('#filtroCoralUnimed').is(':checked');
+        const filtroAlgazarra = $('#filtroAlgazarra').is(':checked');
+        let tituloDinamico = tituloOriginal;
+
+        if (filtroCoralUnimed && !filtroAlgazarra) {
+            tituloDinamico = 'Coral Unimed';
+        } else if (filtroAlgazarra && !filtroCoralUnimed) {
+            tituloDinamico = 'Algazarra Coral';
+        } else if (filtroCoralUnimed && filtroAlgazarra) {
+            tituloDinamico = 'Algazarra Coral / Coral Unimed';
+        }
+
+        return tituloDinamico;
+    }
+
+    // Função para obter os dados do servidor (Google Apps Script)
+    function obterDadosDoServidor() {
+        return new Promise((resolve, reject) => {
+            console.log("Obtendo dados do servidor...");
+            google.script.run
+                .withSuccessHandler(function(dados) {
+                    dadosCache = dados; // Armazena os dados recebidos do GAS no cache
+                    console.log("Dados recebidos do servidor:", dados);
+                    mostrarNotificacao('Dados carregados com sucesso!', 'sucesso');
+                    resolve(dados);
+                })
+                .withFailureHandler(function(error) {
+                    console.error("Erro ao obter dados:", error);
+                    mostrarNotificacao('Erro ao carregar os dados do servidor.', 'erro');
+                    reject(error);
+                })
+                .obterTodosDados(); // Chama a função no GAS
+        });
+    }
+
+    // Função para buscar títulos únicos de concertos e popular o dropdown
+    function buscarTituloUnicoConcerto() {
+        return new Promise((resolve, reject) => {
+            google.script.run
+                .withSuccessHandler(function(titulos) {
+                    console.log("Títulos únicos de concertos recebidos:", titulos);
+                    popularDropdownConcerto(titulos);
+                    resolve(titulos);
+                })
+                .withFailureHandler(function(error) {
+                    console.error("Erro ao obter títulos de concertos:", error);
+                    $('#concertDropdown').html('<option value="">Erro ao carregar concertos</option>');
+                    reject(error);
+                })
+                .buscarTituloUnicoConcerto(); // Chama a função no GAS
+        });
+    }
+
+    // Função para popular o dropdown com os títulos de concertos
+    function popularDropdownConcerto(titulos) {
+        const dropdown = $('#concertDropdown');
+        dropdown.empty(); // Limpa as opções existentes
+
+        if (titulos.length === 0) {
+            dropdown.append('<option value="">Nenhum concerto disponível</option>');
+            return;
+        }
+
+        dropdown.append('<option value="">Selecione um concerto</option>'); // Opção padrão
+
+        titulos.forEach(titulo => {
+            dropdown.append(`<option value="${titulo}">${titulo}</option>`);
+        });
+
+        // Atualizar o título e data exibidos quando um concerto é selecionado
+        dropdown.change(function() {
+            const selecionado = $(this).val();
+            console.log("Concerto selecionado no dropdown:", selecionado);
+            if (selecionado) {
+                // Atualizar o título e data do concerto
+                // 'dadosCache' já contém a data no formato 'dd-MM-yyyy'
+                const concertoData = dadosCache.find(item => item.concerto === selecionado);
+                if (concertoData) {
+                    $('#concertTitle').text(concertoData.concerto);
+                    $('#concertDateDisplay').text(concertoData.dataConcerto);
+                } else {
+                    $('#concertTitle').text('Concerto selecionado'); // Mensagem de fallback
+                    $('#concertDateDisplay').text('-');
+                }
+                aplicarFiltros();
+            } else {
+                // "Selecione um concerto" foi selecionado
+                $('#concertTitle').text('Visão Geral');
+                $('#concertDateDisplay').text('-');
+                aplicarFiltros();
+            }
+        });
+    }
+
+    // Função para obter as contagens das notas para uma pergunta específica
+    function obterMediaNotas(pergunta, tituloConcerto) {
+        return new Promise((resolve, reject) => {
+            google.script.run
+                .withSuccessHandler(function(contagemNotas) {
+                    console.log(`Contagens recebidas para ${pergunta}:`, contagemNotas);
+                    resolve(contagemNotas);
+                })
+                .withFailureHandler(function(error) {
+                    console.error(`Erro ao obter contagens das notas para ${pergunta}:`, error);
+                    reject(error);
+                })
+                .obterMediaNotas(pergunta, tituloConcerto); // Chama a função no GAS
+        });
+    }
+
+    // Função para aplicar filtros e atualizar os gráficos
+    async function aplicarFiltros() {
+        if (!dadosCache) return; // Se não houver dados no cache, sair
+
+        mostrarCarregamento();
+
+        const concertoSelecionado = $('#concertDropdown').val().toLowerCase().trim();
+        console.log("Concerto selecionado:", concertoSelecionado);
+
+        if (concertoSelecionado === '') {
+            // Visão Geral: obter dados agregados
+            // Atualizar o cabeçalho para Visão Geral
+            $('#concertTitle').text('Visão Geral');
+            $('#concertDateDisplay').text('-');
+
+            // Obter contagem das notas para cada pergunta
+            try {
+                const [contagemSatisfacao1, contagemSatisfacao2, contagemSatisfacao4] = await Promise.all([
+                    obterMediaNotas('satisfacao1', ''),
+                    obterMediaNotas('satisfacao2', ''),
+                    obterMediaNotas('satisfacao4', '')
+                ]);
+
+                // Atualizar os gráficos com dados agregados
+                atualizarGraficoMediaPorNota(contagemSatisfacao1, 'graficoMediaPorNota');
+                atualizarGraficoMediaPorNota(contagemSatisfacao2, 'graficoMediaPorNota2');
+                atualizarGraficoMediaPorNota(contagemSatisfacao4, 'graficoMediaPorNota3');
+                atualizarGraficoTotalParticipanteMes(dadosCache); // Total de participantes por mês permanece agregada
+
+                // Atualizar o graficoMediaSatisfacao com a média geral
+                const dadosSatisfacaoGeral = {
+                    mediaSatisfacao1: contagemSatisfacao1,
+                    mediaSatisfacao2: contagemSatisfacao2,
+                    mediaSatisfacao4: contagemSatisfacao4
+                };
+                console.log("Dados para graficoMediaSatisfacao (Visão Geral):", dadosSatisfacaoGeral);
+                atualizarGraficoMediaSatisfacao(dadosSatisfacaoGeral);
+
+            } catch (error) {
+                console.error("Erro ao obter contagem das notas:", error);
+                mostrarNotificacao('Erro ao processar os dados da pesquisa.', 'erro');
+            }
+
+        } else {
+            // Visão Específica: obter dados filtrados
+            // Atualizar o cabeçalho já foi feito no evento change do dropdown
+
+            // Obter contagem das notas para cada pergunta
+            try {
+                const [contagemSatisfacao1, contagemSatisfacao2, contagemSatisfacao4] = await Promise.all([
+                    obterMediaNotas('satisfacao1', $('#concertDropdown').val()),
+                    obterMediaNotas('satisfacao2', $('#concertDropdown').val()),
+                    obterMediaNotas('satisfacao4', $('#concertDropdown').val())
+                ]);
+
+                // Atualizar os gráficos com dados filtrados
+                atualizarGraficoMediaPorNota(contagemSatisfacao1, 'graficoMediaPorNota');
+                atualizarGraficoMediaPorNota(contagemSatisfacao2, 'graficoMediaPorNota2');
+                atualizarGraficoMediaPorNota(contagemSatisfacao4, 'graficoMediaPorNota3');
+
+                // Filtrar os dados para atualizar o graficoTotalParticipanteMes
+                const dadosFiltrados = dadosCache.filter(item => item.concerto.toLowerCase().trim() === concertoSelecionado);
+                console.log("Dados filtrados para participante por mês:", dadosFiltrados);
+                atualizarGraficoTotalParticipanteMes(dadosFiltrados);
+
+                // Atualizar o graficoMediaSatisfacao com a média geral
+                const dadosSatisfacaoGeral = {
+                    mediaSatisfacao1: contagemSatisfacao1,
+                    mediaSatisfacao2: contagemSatisfacao2,
+                    mediaSatisfacao4: contagemSatisfacao4
+                };
+                console.log("Dados para graficoMediaSatisfacao (Visão Específica):", dadosSatisfacaoGeral);
+                atualizarGraficoMediaSatisfacao(dadosSatisfacaoGeral);
+
+            } catch (error) {
+                console.error("Erro ao obter contagem das notas:", error);
+                mostrarNotificacao('Erro ao processar os dados da pesquisa.', 'erro');
+            }
+        }
+
+        esconderCarregamento();
+    }
+
+    // Função para atualizar o gráfico de Média de Satisfação
+    function atualizarGraficoMediaSatisfacao(dadosSatisfacaoGeral) {
+        console.log("Atualizando graficoMediaSatisfacao com dados:", dadosSatisfacaoGeral);
+
+        let contagemSatisfacao1 = dadosSatisfacaoGeral.mediaSatisfacao1 || {};
+        let contagemSatisfacao2 = dadosSatisfacaoGeral.mediaSatisfacao2 || {};
+        let contagemSatisfacao4 = dadosSatisfacaoGeral.mediaSatisfacao4 || {};
+
+        let totalParticipantes = 0;
+        let somaNotas = 0;
+
+        for (let nota = 0; nota <= 10; nota++) {
+            const contagem1 = parseInt(contagemSatisfacao1[nota] || 0);
+            const contagem2 = parseInt(contagemSatisfacao2[nota] || 0);
+            const contagem4 = parseInt(contagemSatisfacao4[nota] || 0);
+
+            somaNotas += (nota * contagem1) + (nota * contagem2) + (nota * contagem4);
+            totalParticipantes += contagem1 + contagem2 + contagem4;
+        }
+
+        let mediaGeral = totalParticipantes > 0 ? parseFloat((somaNotas / totalParticipantes).toFixed(2)) : 0;
+        console.log("Média Geral Calculada:", mediaGeral);
+
+        // Garantir que mediaGeral seja um número válido
+        if (isNaN(mediaGeral)) {
+            console.error("mediaGeral é NaN, ajustando para 0.");
+            mediaGeral = 0;
+        }
+
+        const dadosGrafico = [mediaGeral, 10 - mediaGeral]; // Média vs. Diferença até 10
+        console.log("Dados para graficoMediaSatisfacao:", dadosGrafico);
+
+        if (graficoMediaSatisfacao) {
+            // Atualizar dados existentes
+            graficoMediaSatisfacao.data.datasets[0].data = dadosGrafico;
+            graficoMediaSatisfacao.update();
+        } else {
+            // Criar o gráfico pela primeira vez
+            const ctx = document.getElementById('graficoMediaSatisfacao').getContext('2d');
+            graficoMediaSatisfacao = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Média de Satisfação', 'Diferença até 10'],
+                    datasets: [{
+                        data: dadosGrafico,
+                        backgroundColor: ['#36A2EB', '#CCCCCC'],
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false, // Permite ajustar a altura via CSS
+                    plugins: {
+                        title: { // Título do gráfico
+                            display: true,
+                            //text: 'Média de Satisfação',
+                            font: {
+                                size: 14 // Fonte reduzida
+                            },
+                            padding: {
+                                top: 10,
+                                bottom: 10
+                            }
+                        },
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                font: {
+                                    size: 10 // Fonte reduzida
+                                }
+                            }
+                        },
+                        datalabels: { // Configuração dos rótulos de dados
+                            formatter: (value, context) => {
+                                if (value > 0) {
+                                    return value.toFixed(2);
+                                }
+                                return '';
+                            },
+                            color: '#fff',
+                            font: {
+                                weight: 'bold',
+                                size: 12 // Fonte reduzida para legibilidade
+                            },
+                            align: 'center',
+                            anchor: 'center'
+                        }
+                    }
+                },
+                plugins: [ChartDataLabels]
+            });
+        }
+    }
+
+    // Função para atualizar o gráfico de Média por Nota
+    function atualizarGraficoMediaPorNota(mediaNotas, canvasId) {
+        // Converter o objeto de contagem para um array ordenado de 0 a 10
+        const labels = [];
+        const dados = [];
+        for (let nota = 0; nota <= 10; nota++) {
+            labels.push(nota.toString());
+            dados.push(mediaNotas[nota] || 0);
+        }
+
+        // Preparar as cores alternadas para as barras
+        const cores = [];
+        for (let i = 0; i <= 10; i++) {
+            cores.push(i % 2 === 0 ? '#36A2EB' : '#FF6384'); // Alterna entre azul e vermelho
+        }
+
+        let grafico;
+        if (canvasId === 'graficoMediaPorNota') {
+            grafico = graficoMediaPorNota;
+        } else if (canvasId === 'graficoMediaPorNota2') {
+            grafico = graficoMediaPorNota2;
+        } else if (canvasId === 'graficoMediaPorNota3') {
+            grafico = graficoMediaPorNota3;
+        }
+
+        if (grafico) {
+            // Atualizar dados existentes
+            grafico.data.labels = labels;
+            grafico.data.datasets[0].data = dados;
+            grafico.data.datasets[0].backgroundColor = cores;
+            //grafico.options.plugins.title.text = `Contagem por Nota da ${getPerguntaLabel(canvasId)}`;
+            grafico.update();
+        } else {
+            // Criar o gráfico pela primeira vez
+            const ctx = document.getElementById(canvasId).getContext('2d');
+            grafico = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Contagem da Nota',
+                        data: dados,
+                        backgroundColor: cores,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false, // Permite ajustar a altura via CSS
+                    plugins: {
+                        title: { // Título do gráfico
+                            display: true,
+                            //text: `Contagem por Nota da ${getPerguntaLabel(canvasId)}`,
+                            font: {
+                                size: 14 // Fonte reduzida
+                            },
+                            padding: {
+                                top: 10,
+                                bottom: 10
+                            }
+                        },
+                        legend: {
+                            display: false
+                        },
+                        datalabels: { // Configuração dos rótulos de dados
+                            formatter: (value, context) => {
+                                if (value > 0) {
+                                    return value;
+                                }
+                                return '';
+                            },
+                            color: '#000',
+                            font: {
+                                weight: 'bold',
+                                size: 12 // Fonte reduzida para legibilidade
+                            },
+                            anchor: 'end',
+                            align: 'top'
+                        }
+                    },
+                    scales: {
+                        x: {
+                            display: true,
+                            ticks: {
+                                font: {
+                                    size: 10 // Fonte reduzida
+                                }
+                            },
+                            grid: {
+                                display: false // Remove as linhas de grade do eixo X
+                            }
+                        },
+                        y: {
+                            display: false, // Mantém o eixo Y para contagens
+                            ticks: {
+                                font: {
+                                    size: 10 // Fonte reduzida
+                                }
+                            },
+                            grid: {
+                                display: false // Remove as linhas de grade do eixo Y
+                            }
+                        }
+                    },
+                    layout: {
+                        padding: {
+                            top: 10
+                        }
+                    }
+                },
+                plugins: [ChartDataLabels]
+            });
+
+            // Associar o gráfico à variável correspondente
+            if (canvasId === 'graficoMediaPorNota') {
+                graficoMediaPorNota = grafico;
+            } else if (canvasId === 'graficoMediaPorNota2') {
+                graficoMediaPorNota2 = grafico;
+            } else if (canvasId === 'graficoMediaPorNota3') {
+                graficoMediaPorNota3 = grafico;
+            }
+        }
+    }
+
+    // Função para obter o label da pergunta com base no canvasId
+    function getPerguntaLabel(canvasId) {
+        switch(canvasId) {
+            case 'graficoMediaPorNota':
+                return 'Satisfação 1';
+            case 'graficoMediaPorNota2':
+                return 'Satisfação 2';
+            case 'graficoMediaPorNota3':
+                return 'Satisfação 4';
+            default:
+                return '';
+        }
+    }
+
+    const nomesMeses = [
+        'Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun',
+        'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'
+    ];
+
+    /**
+     * Extrai o nome do mês a partir da string de data.
+     *
+     * @param {string} dataConcerto - A string da data no formato "DD-MM-YYYY" ou similar.
+     * @return {string|null} O nome do mês em português ou null se não for possível extrair.
+     */
+    function extrairMes(dataConcerto) {
+        // Expressão regular para capturar a data no formato "DD-MM-YYYY"
+        const regex = /\d{2}-\d{2}-\d{4}/;
+        const match = dataConcerto.match(regex);
+        
+        if (match) {
+            const partes = match[0].split('-');
+            const mes = parseInt(partes[1], 10); // Extrai o mês (1-12)
+            if (mes >= 1 && mes <= 12) {
+                return nomesMeses[mes - 1]; // Retorna o nome do mês
+            }
+        }
+        
+        return null; // Retorna null se não conseguir extrair
+    }
+
+    // Variável global para armazenar o gráfico
+    let GraficoTotalParticipanteMes = null;
+
+    // Função para atualizar o gráfico de Total de Participantes por Mês
+    function atualizarGraficoTotalParticipanteMes(dadosFiltrados) {
+        let participantesPorMes = {};
+
+        if (dadosFiltrados.length === 0) {
+            // Nenhum dado a ser exibido
+            participantesPorMes = {};
+        } else if (dadosFiltrados.length === 1 && dadosFiltrados[0].concerto === 'Visão Geral') {
+            // Visão Geral: contar participantes por mês para todos os concertos
+            dadosCache.forEach(item => {
+                const dataConcerto = item.dataConcerto;
+                if (dataConcerto && dataConcerto !== '-') {
+                    const mes = extrairMes(dataConcerto);
+                    if (mes) {
+                        participantesPorMes[mes] = (participantesPorMes[mes] || 0) + 1;
+                    }
+                }
+            });
+        } else {
+            // Visão Específica: contar participantes por mês para o concerto selecionado
+            dadosFiltrados.forEach(item => {
+                const dataConcerto = item.dataConcerto;
+                if (dataConcerto && dataConcerto !== '-') {
+                    const mes = extrairMes(dataConcerto);
+                    if (mes) {
+                        participantesPorMes[mes] = (participantesPorMes[mes] || 0) + 1;
+                    }
+                }
+            });
+        }
+
+        // Ordenar os meses cronologicamente
+        const mesesOrdenados = nomesMeses.filter(mes => participantesPorMes[mes] !== undefined);
+        const labels = mesesOrdenados;
+        const dadosParticipantes = mesesOrdenados.map(mes => participantesPorMes[mes]);
+
+        if (GraficoTotalParticipanteMes) {
+            // Atualizar dados existentes
+            GraficoTotalParticipanteMes.data.labels = labels;
+            GraficoTotalParticipanteMes.data.datasets[0].data = dadosParticipantes;
+            GraficoTotalParticipanteMes.update();
+        } else {
+            // Criar o gráfico pela primeira vez
+            const ctx = document.getElementById('graficoTotalParticipanteMes').getContext('2d');
+            GraficoTotalParticipanteMes = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Total de Participantes',
+                        data: dadosParticipantes,
+                        backgroundColor: [
+                            '#FFCE56', '#4BC0C0', '#FF6384', '#36A2EB',
+                            '#9966FF', '#FF9F40', '#FFCE56', '#4BC0C0',
+                            '#FF6384', '#36A2EB', '#9966FF', '#FF9F40'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false, // Permite ajustar a altura via CSS
+                    plugins: {
+                        legend: {
+                            display: false,
+                            position: 'bottom',
+                        },
+                        tooltip: {
+                            enabled: true
+                        },
+                        datalabels: { // Configuração dos rótulos de dados
+                            formatter: (value, context) => {
+                                if (value > 0) {
+                                    return value;
+                                }
+                                return '';
+                            },
+                            color: '#fff',
+                            font: {
+                                weight: 'bold',
+                                size: 12 // Fonte reduzida para legibilidade
+                            },
+                            anchor: 'end',
+                            align: 'top'
+                        }
+                    },
+                    scales: {
+                        x: {
+                            display: true,
+                            title: {
+                                display: true,
+                                text: 'Mês',
+                                font: {
+                                    size: 12 // Fonte reduzida
+                                }
+                            },
+                            ticks: {
+                                font: {
+                                    size: 10 // Fonte reduzida
+                                }
+                            },
+                            grid: {
+                                display: false // Remove as linhas de grade do eixo X
+                            }
+                        },
+                        y: {
+                            display: false, // Exibir o eixo Y para contagens
+                            beginAtZero: true,
+                            ticks: {
+                                font: {
+                                    size: 10 // Fonte reduzida
+                                }
+                            },
+                            grid: {
+                                display: false // Remove as linhas de grade do eixo Y
+                            }
+                        }
+                    },
+                    layout: {
+                        padding: {
+                            top: 10
+                        }
+                    }
+                },
+                plugins: [ChartDataLabels]
+            });
+        }
+    }
+
+    // Função para gerenciar a seleção de notas nas perguntas
+    function setupRatingButtons() {
+        $('.rating-buttons').each(function() {
+            const buttons = $(this).find('button');
+            buttons.click(function() {
+                // Remover a classe 'selected' de todos os botões da pergunta
+                $(this).siblings().removeClass('selected');
+                // Adicionar a classe 'selected' ao botão clicado
+                $(this).addClass('selected');
+                console.log(`Botão selecionado: ${$(this).text()}`);
+            });
+        });
+    }
+
+    // Função para coletar os dados do formulário
+    function coletarDadosFormulario() {
+        const concertName = $('#concertName').val().trim();
+        const concertDate = $('#concertDateInput').val();
+        const concertoSelecionado = $('#concertDropdown').val();
+
+        // Coletar notas das perguntas
+        const getSelectedNota = (questionId) => {
+            const selectedButton = $(`#${questionId} button.selected`);
+            return selectedButton.length > 0 ? selectedButton.text() : null;
+        };
+
+        const satisfacao1 = getSelectedNota('question1');
+        const satisfacao2 = getSelectedNota('question2');
+        const satisfacao4 = getSelectedNota('question4');
+
+        const motivo = $('#question3').val().trim();
+        const acessibilidade = $('#question5').val().trim();
+
+        console.log("Dados coletados do formulário:", {
+            concertName,
+            concertDate,
+            satisfacao1,
+            satisfacao2,
+            satisfacao4,
+            motivo,
+            acessibilidade
+        });
+
+        return {
+            concerto: concertName,        // Renomeado para 'concerto'
+            dataConcerto: concertDate,    // Formato 'dd-mm-yyyy'
+            satisfacao1: satisfacao1,
+            satisfacao2: satisfacao2,
+            satisfacao4: satisfacao4,
+            motivo: motivo,
+            acessibilidade: acessibilidade
+        };
+    }
+
+    // Função para validar os dados do formulário
+    function validarDados(dados) {
+        let isValid = true;
+        // Limpar mensagens de erro anteriores
+        $('input, textarea').removeClass('error');
+        $('#messageBox').removeClass('success error').text('');
+
+        // Verificar campos obrigatórios
+        if (!dados.concerto) {
+            $('#concertName').addClass('error');
+            isValid = false;
+        }
+
+        if (!dados.dataConcerto) {
+            $('#concertDateInput').addClass('error');
+            isValid = false;
+        }
+
+        if (dados.satisfacao1 === null) {
+            $('#question1').addClass('error');
+            isValid = false;
+        }
+
+        if (dados.satisfacao2 === null) {
+            $('#question2').addClass('error');
+            isValid = false;
+        }
+
+        if (dados.satisfacao4 === null) {
+            $('#question4').addClass('error');
+            isValid = false;
+        }
+
+        if (!isValid) {
+            $('#messageBox').addClass('error').text('Por favor, preencha todos os campos obrigatórios.');
+            console.log("Validação falhou. Campos obrigatórios não preenchidos.");
+        } else {
+            console.log("Validação bem-sucedida.");
+        }
+
+        return isValid;
+    }
+
+    // Função para enviar os dados para o servidor
+    function enviarDados(dados) {
+        mostrarCarregamento();
+        google.script.run
+            .withSuccessHandler(function(response) {
+                esconderCarregamento();
+                $('#messageBox').removeClass('error').addClass('success').text(response);
+                console.log("Dados enviados com sucesso:", response);
+                // Resetar o formulário
+                resetarFormulario();
+                // Atualizar os gráficos
+                aplicarFiltros();
+            })
+            .withFailureHandler(function(error) {
+                esconderCarregamento();
+                console.error("Erro ao enviar dados:", error);
+                $('#messageBox').removeClass('success').addClass('error').text('Erro ao enviar a pesquisa. Por favor, tente novamente.');
+            })
+            .processarPesquisa(dados); // Função no servidor para processar
+    }
+
+    // Função para resetar o formulário após o envio bem-sucedido
+    function resetarFormulario() {
+        //$('#concertName').val('');
+        //$('#concertDateInput').val('');
+        $('.rating-buttons button').removeClass('selected');
+        $('#question3').val('');
+        $('#question5').val('');
+        $('#concertDropdown').val('');
+        $('#concertTitle').text('Selecione um concerto');
+        $('#concertDateDisplay').text('-');
+        console.log("Formulário resetado.");
+    }
+
+    // Função para configurar eventos dos botões de envio
+    function configurarEventos() {
+        $('#submitButton').click(function() {
+            console.log("Botão de envio da pesquisa clicado");
+            const dados = coletarDadosFormulario();
+            if (validarDados(dados)) {
+                enviarDados(dados);
+            }
+        });
+    }
+
+    // Função para carregar os dados iniciais de forma assíncrona
+    async function carregarDadosIniciais() {
+        mostrarCarregamento();
+        try {
+            await Promise.all([
+                obterDadosDoServidor(),
+                buscarTituloUnicoConcerto()
+            ]);
+            aplicarFiltros(); // Aplicar os filtros padrão ao carregar
+            console.log("Dados iniciais carregados e filtros aplicados.");
+        } catch (error) {
+            console.error("Erro ao carregar os dados iniciais:", error);
+            alert('Erro ao carregar os dados iniciais.');
+        } finally {
+            esconderCarregamento(); // Esconder o indicador de carregamento
+        }
+    }
+
+    // Função para exportar os gráficos em PDF
+    async function exportarPDF() {
+        console.log("Iniciando a geração do PDF...");
+
+        // Mostra o indicador de carregamento
+        mostrarCarregamento();
+        console.log("Indicador de carregamento exibido.");
+
+        try {
+            // Cria uma nova instância do jsPDF
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({
+                orientation: 'portrait',
+                unit: 'mm',
+                format: 'a4'
+            });
+            console.log("Instância do jsPDF criada.");
+
+            const pageWidth = doc.internal.pageSize.getWidth();
+            const marginLeft = 20;
+            const marginTop = 20;
+            const spacingY = 10;
+            const spacingX = 10;
+
+            // Configurações de cabeçalho
+            const headerHeight = 30;
+
+            // Desenhar cabeçalho
+            doc.setLineWidth(0.1);
+            doc.rect(marginLeft, marginTop, pageWidth - 2 * marginLeft, headerHeight);
+            console.log("Cabeçalho desenhado.");
+
+            // Adicionar imagens do cabeçalho (logos)
+            const logo1 = "https://i.ibb.co/Y768JNk/algazarra.jpg";
+            const logo2 = "https://i.ibb.co/6w8N1kp/instituto-Todos-Cantos.jpg";
+            console.log("URLs das imagens do cabeçalho:", logo1, logo2);
+
+            // Adiciona as imagens usando a função auxiliar
+            await addImageToPDF(doc, logo1, "JPEG", marginLeft + 10, marginTop + 5, 30, 20);
+            console.log("Logo1 adicionada ao PDF.");
+            await addImageToPDF(doc, logo2, "JPEG", pageWidth - marginLeft - 40, marginTop + 5, 30, 20);
+            console.log("Logo2 adicionada ao PDF.");
+
+            // Adicionar textos do cabeçalho
+            doc.setFontSize(10);
+            doc.setFont("helvetica", "normal");
+            doc.text("CNPJ 11.510.597/0001-30", marginLeft + (pageWidth - 2 * marginLeft) / 2, marginTop + 10, { align: 'center' });
+            doc.text("Praça Costa Pereira, 52, Ed. Michellini - sala 1104,", marginLeft + (pageWidth - 2 * marginLeft) / 2, marginTop + 15, { align: 'center' });
+            doc.text("Centro, Vitória - ES, CEP 29010-080", marginLeft + (pageWidth - 2 * marginLeft) / 2, marginTop + 20, { align: 'center' });
+            console.log("Textos do cabeçalho adicionados.");
+
+            // Capturar os títulos dinâmicos
+            const subtitulo = obterTituloDinamico('Relatório de Dashboard'); // Ajuste conforme necessário
+            console.log("Subtítulo dinâmico capturado:", subtitulo);
+
+            // Adicionar subtítulo dinâmico
+            doc.setFontSize(12);
+            doc.text(subtitulo, marginLeft + (pageWidth - 2 * marginLeft) / 2, marginTop + headerHeight + spacingY, { align: 'center' });
+            console.log("Subtítulo dinâmico adicionado.");
+
+            // Espaçamento antes dos gráficos
+            let currentY = marginTop + headerHeight + spacingY + 10;
+
+            // Lista de IDs dos canvases a serem capturados
+            const canvasIds = [
+                'graficoMediaSatisfacao',
+                'graficoTotalParticipanteMes',
+                'graficoMediaPorNota',
+                'graficoMediaPorNota2',
+                'graficoMediaPorNota3'
+            ];
+
+            for (let i = 0; i < canvasIds.length; i++) {
+                const canvasId = canvasIds[i];
+                const canvas = document.getElementById(canvasId);
+                if (!canvas) {
+                    console.warn(`Canvas com ID ${canvasId} não encontrado.`);
+                    continue;
+                }
+
+                // Capturar o canvas como imagem
+                const imgData = canvas.toDataURL('image/png', 1.0);
+                const imgWidth = pageWidth - 2 * marginLeft;
+                const imgHeight = (canvas.height / canvas.width) * imgWidth;
+
+                // Verificar se a próxima imagem cabe na página atual, caso contrário, adicionar uma nova página
+                if (currentY + imgHeight + spacingY > doc.internal.pageSize.getHeight()) {
+                    doc.addPage();
+                    currentY = marginTop;
+                }
+
+                // Adicionar título acima do gráfico
+                const tituloGrafico = $(`#${canvasId}`).siblings('h3').text();
+                doc.setFontSize(12);
+                doc.text(tituloGrafico, marginLeft, currentY, { align: 'left' });
+                currentY += 5;
+
+                // Adicionar a imagem do gráfico
+                doc.addImage(imgData, 'PNG', marginLeft, currentY, imgWidth, imgHeight);
+                console.log(`Gráfico ${canvasId} adicionado ao PDF.`);
+                currentY += imgHeight + spacingY;
+            }
+
+            // Salvar o PDF após adicionar todos os gráficos
+            doc.save('dashboard.pdf');
+            console.log("PDF salvo com sucesso.");
+
+            esconderCarregamento();
+            mostrarNotificacao('PDF gerado com sucesso!', 'sucesso');
+
+        } catch (error) {
+            console.error("Erro durante a geração do PDF:", error);
+            mostrarNotificacao('Ocorreu um erro ao gerar o PDF.', 'erro');
+            esconderCarregamento();
+        }
+    }
+
+    // Função auxiliar para adicionar imagens ao PDF com tratamento de erros.
+    async function addImageToPDF(doc, imgUrl, format, x, y, width, height) {
+        try {
+            console.log(`Tentando carregar imagem de URL: ${imgUrl}`);
+            const img = await fetch(imgUrl)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Falha ao carregar imagem: ${response.statusText}`);
+                    }
+                    return response.blob();
+                })
+                .then(blob => new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onloadend = () => resolve(reader.result);
+                    reader.onerror = reject;
+                    reader.readAsDataURL(blob);
+                }));
+            doc.addImage(img, format, x, y, width, height);
+            console.log(`Imagem carregada e adicionada ao PDF: ${imgUrl}`);
+        } catch (error) {
+            console.error(`Erro ao adicionar imagem ao PDF (${imgUrl}):`, error);
+        }
+    }
+
+    // Inicializa os dados e configura eventos para os filtros e dropdown
+    carregarDadosIniciais();
+
+    // Configurar a seleção dos botões de rating
+    setupRatingButtons();
+
+    // Configurar os eventos do formulário
+    configurarEventos();
+
+    // Configurar o evento de exportação para PDF
+    $('#exportarPDF').click(function() {
+        console.log("Botão de exportar PDF clicado");
+        exportarPDF();
+    });
+
+    // ==================== FIM DO DOM READY ====================
+});
+
+    </script>
+
+</body>
+</html>

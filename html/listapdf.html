@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Presença Online</title>
+   
+   <!-- css/LisPDF -->
+   
+
+</head>
+<body>
+
+   <body>
+      <div class="lista-presenca-container">
+        <div class="header">
+            <h1 id="ano-atual"></h1>
+        </div>
+
+        <div class="layout-container">
+            <!-- Menu Lateral dos Meses -->
+            <div class="menu-meses" id="menu-meses">
+                <!-- Botões dos meses serão inseridos aqui dinamicamente -->
+            </div>
+
+       <!-- Novo Menu Lateral dos Botões -->
+                <div class="menu-botoes">
+                    <!-- Botões de ação -->
+                    <button id="btn-resetar-selecoes" class="btn btn-resetar">Resetar</button>
+                    <!-- <button id="btn-export-csv" class="btn btn-export-csv">Exportar CSV</button> -->
+                    <button id="btn-export-pdf" class="btn btn-export-pdf">Gerar PDF</button>
+
+                    <!-- Checkboxes -->
+                    <div class="checkbox-container">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="AlgarraCoral" class="checkbox-input" />
+                            <span class="checkbox-custom"></span>
+                            Algazarra
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="CoralUnimed" class="checkbox-input" />
+                            <span class="checkbox-custom"></span>
+                            Coral
+                        </label>
+                    </div>
+                </div>
+
+
+            <!-- Conteúdo Principal -->
+            <div class="main-content">
+                <!-- Calendários -->
+                <div id="calendarios">
+                    <!-- Calendários serão inseridos aqui dinamicamente -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Mensagem de Feedback -->
+    <div id="mensagem-feedback" class="mensagem"></div>
+
+  <script>
+    // Importação da versão UMD do jsPDF
+    const { jsPDF } = window.jspdf;
+
+    // Função para exibir mensagens de feedback
+    function exibirMensagem(mensagem, tipo) {
+        const mensagemDiv = document.getElementById('mensagem-feedback');
+        mensagemDiv.textContent = mensagem;
+        mensagemDiv.className = `mensagem ${tipo}`;
+        mensagemDiv.style.display = 'block';
+
+        // Ocultar a mensagem após 5 segundos
+        setTimeout(() => {
+            mensagemDiv.style.display = 'none';
+        }, 5000);
+    }
+
+    // Função para obter o ano atual
+    const anoAtual = new Date().getFullYear();
+    document.getElementById('ano-atual').textContent = `Lista de Presença - Ano: ${anoAtual}`;
+    console.log(`Ano atual definido: ${anoAtual}`);
+
+    // Lista dos meses abreviados em português
+    const meses = [
+        "Jan", "Fev", "Mar", "Abr", "Mai", "Jun",
+        "Jul", "Ago", "Set", "Out", "Nov", "Dez"
+    ];
+
+    // Cabeçalhos dos dias da semana (D, S, T, Q, Q, S, S)
+    const diasSemana = ["D", "S", "T", "Q", "Q", "S", "S"]; // Domingo, Segunda, Terça, Quarta, Quinta, Sexta, Sábado
+
+    const menuMeses = document.getElementById('menu-meses');
+    const calendariosContainer = document.getElementById('calendarios');
+
+    // Função para criar o menu de meses e os calendários
+    meses.forEach((mes, index) => {
+        // Criar botão do mês
+        const button = document.createElement('button');
+        button.classList.add('mes-button');
+        button.textContent = mes;
+        button.onclick = () => mostrarCalendario(index);
+        if(index === new Date().getMonth()) {
+            button.classList.add('active');
+        }
+        // Corrigindo a inserção dos botões dos meses
+        // Utilizamos appendChild em vez de insertBefore, pois 'btn-resetar-selecoes' não é um filho de 'menuMeses'
+        menuMeses.appendChild(button);
+        console.log(`Botão criado para o mês: ${mes}`);
+
+        // Criar calendário para o mês
+        const calendario = document.createElement('div');
+        calendario.classList.add('calendario');
+        calendario.setAttribute('data-mes', index); // Adiciona o atributo data-mes
+        if(index === new Date().getMonth()) {
+            calendario.classList.add('active');
+        }
+
+        // Cabeçalho dos dias da semana
+        const diasSemanaDiv = document.createElement('div');
+        diasSemanaDiv.classList.add('dias-semana');
+        diasSemana.forEach((dia, diaIndex) => {
+            const diaDiv = document.createElement('div');
+            diaDiv.textContent = dia;
+            if(diaIndex === 0 || diaIndex === 6) { // Domingo e Sábado
+                diaDiv.classList.add('weekend');
+            }
+            diasSemanaDiv.appendChild(diaDiv);
+        });
+        calendario.appendChild(diasSemanaDiv);
+        console.log(`Cabeçalho dos dias da semana adicionado para o mês: ${mes}`);
+
+        // Dias do mês
+        const diasMesDiv = document.createElement('div');
+        diasMesDiv.classList.add('dias-mes');
+
+        const primeiroDia = new Date(anoAtual, index, 1).getDay();
+        const totalDias = new Date(anoAtual, index + 1, 0).getDate();
+
+        console.log(`Criando calendário para ${mes}: ${totalDias} dias, começando no dia da semana ${primeiroDia}`);
+
+        // Preencher dias vazios antes do primeiro dia
+        for(let i = 0; i < primeiroDia; i++) {
+            const vazio = document.createElement('div');
+            vazio.classList.add('vazio');
+            diasMesDiv.appendChild(vazio);
+        }
+
+        // Preencher os dias do mês
+        for(let dia = 1; dia <= totalDias; dia++) {
+            const diaDiv = document.createElement('div');
+            diaDiv.textContent = dia;
+            const diaDaSemana = new Date(anoAtual, index, dia).getDay();
+            if(diaDaSemana === 0 || diaDaSemana === 6) { // Domingo e Sábado
+                diaDiv.classList.add('weekend');
+            }
+            
+            // Adicionar evento para selecionar/deselecionar o dia
+            diaDiv.onclick = () => selecionarDia(diaDiv, index, dia);
+            diasMesDiv.appendChild(diaDiv);
+        }
+
+        calendario.appendChild(diasMesDiv);
+        calendariosContainer.appendChild(calendario);
+        console.log(`Calendário criado para o mês: ${mes}`);
+    });
+
+    // Função para mostrar o calendário selecionado
+    function mostrarCalendario(index) {
+        console.log(`Mostrando calendário para o mês: ${meses[index]}`);
+        // Remover a classe 'active' de todos os botões e calendários
+        const buttons = menuMeses.getElementsByClassName('mes-button');
+        const calendarios = calendariosContainer.getElementsByClassName('calendario');
+        for(let i = 0; i < buttons.length; i++) {
+            buttons[i].classList.remove('active');
+            calendarios[i].classList.remove('active');
+        }
+        // Adicionar a classe 'active' ao botão e calendário selecionados
+        buttons[index].classList.add('active');
+        calendarios[index].classList.add('active');
+        console.log(`Calendário para o mês ${meses[index]} agora está ativo.`);
+    }
+
+    // Função para selecionar ou deselecionar um dia
+    function selecionarDia(diaElement, mes, dia) {
+        // Ignorar cliques em feriados
+        if (diaElement.classList.contains('feriado')) {
+            console.log(`Tentativa de selecionar um feriado: Mês ${mes + 1}, Dia ${dia}`);
+            return;
+        }
+
+        // Criar uma chave única para o dia (mes-dia) com separador
+        let key = `${mes}-${dia}`;
+
+        // Inicializar o contador global se ainda não existir
+        if (!window.diaContadores) {
+            window.diaContadores = {};
+        }
+
+        // Verificar se o dia já foi selecionado
+        if (diaElement.classList.contains('selecionado')) {
+            // Incrementar o contador no mapa global
+            if (window.diaContadores[key]) {
+                window.diaContadores[key] += 1;
+            } else {
+                window.diaContadores[key] = 1;
+            }
+
+            // Atualizar o contador visualmente
+            const contadorSpan = diaElement.querySelector('.contador');
+            if(contadorSpan) {
+                contadorSpan.textContent = window.diaContadores[key];
+            }
+
+            console.log(`Dia ${dia} do mês ${mes + 1} selecionado novamente. Contador: ${window.diaContadores[key]}`);
+        } else {
+            // Primeira seleção
+            diaElement.classList.add('selecionado');
+            window.diaContadores[key] = 1;
+
+            // Adicionar o atributo de dados para o dia
+            diaElement.dataset.dia = dia;
+
+            // Adicionar elemento visual para contador
+            const contadorSpan = document.createElement('span');
+            contadorSpan.classList.add('contador');
+            contadorSpan.textContent = '1';
+            diaElement.appendChild(contadorSpan);
+
+            console.log(`Dia ${dia} do mês ${mes + 1} selecionado pela primeira vez.`);
+        }
+
+        // Log para verificar o conteúdo de diaElement
+        console.log("Estado do diaElement após seleção: ", diaElement);
+    }
+
+    // Função para coletar dias selecionados com contagem de cliques
+    function coletarSelecionados() {
+        console.log("Iniciando coleta dos dias selecionados.");
+        const selecionados = {};
+        const calendarioAtivo = calendariosContainer.querySelector('.calendario.active');
+        
+        if (calendarioAtivo && window.diaContadores) {
+            const mesAtivo = parseInt(calendarioAtivo.getAttribute('data-mes'), 10); // Obtém o índice do mês
+
+            for (const key in window.diaContadores) {
+                if (window.diaContadores.hasOwnProperty(key)) {
+                    const [mes, dia] = key.split('-').map(Number);
+                    if (mes === mesAtivo) {
+                        if (selecionados[dia]) {
+                            selecionados[dia] += window.diaContadores[key];
+                        } else {
+                            selecionados[dia] = window.diaContadores[key];
+                        }
+                    }
+                }
+            }
+        }
+
+        console.log("Dias selecionados com contagem:", selecionados);
+        return { mes: calendarioAtivo ? parseInt(calendarioAtivo.getAttribute('data-mes'), 10) : null, dias: selecionados };
+    }
+
+   
+   // Atualização da função para obter alunos presentes
+function obterAlunosPresentes(coralSelecionado) {
+    return new Promise((resolve, reject) => {
+        if (coralSelecionado === 'AlgazarraCoral') {
+            google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).getAlunosPorCoral('AlgazarraCoral');
+        } else if (coralSelecionado === 'CoralUnimed') {
+            google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).getAlunosPorCoral('CoralUnimed');
+        }
+    });
+}
+// Função para exportar a lista em PDF
+async function generatePDF() {
+    try {
+        // Verificar quais checkboxes estão ativas
+        const isAlgazarraCoralChecked = document.getElementById('AlgarraCoral').checked;
+        const isCoralUnimedChecked = document.getElementById('CoralUnimed').checked;
+
+        // Determinar qual coral foi selecionado
+        let alunos;
+        let subtitulo;
+
+        if (isAlgazarraCoralChecked && !isCoralUnimedChecked) {
+            alunos = await obterAlunosPresentes('AlgazarraCoral');
+            subtitulo = "Algazarra Coral";
+        } else if (!isAlgazarraCoralChecked && isCoralUnimedChecked) {
+            alunos = await obterAlunosPresentes('CoralUnimed');
+            subtitulo = "Coral Unimed";
+        } else {
+            exibirMensagem("Por favor, selecione apenas um coral.", "erro");
+            return;
+        }
+
+        if (!alunos || alunos.length === 0) {
+            exibirMensagem("Nenhum aluno encontrado para gerar o PDF.", "erro");
+            return;
+        }
+
+        const doc = new jsPDF({
+            orientation: 'portrait',
+            unit: 'mm',
+            format: 'a4'  // Formato da página A4
+        });
+
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const marginTop = 20;
+        const marginLeft = 25;
+        const headerHeight = 30;
+
+        // Configurações de cabeçalho
+        const col1Width = 50;
+        const col2Width = 80;
+        const col3Width = 40;
+
+        const col1X = marginLeft;
+        const col2X = marginLeft + col1Width;
+        const col3X = marginLeft + col1Width + col2Width;
+
+        // Desenhar cabeçalho
+        doc.setLineWidth(0.1);
+        doc.rect(col1X, marginTop, col1Width, headerHeight);
+        doc.rect(col2X, marginTop, col2Width, headerHeight);
+        doc.rect(col3X, marginTop, col3Width, headerHeight);
+
+        // Condicional para o logotipo do coral no cabeçalho esquerdo
+        if (isAlgazarraCoralChecked && !isCoralUnimedChecked) {
+            doc.addImage("https://i.ibb.co/Y768JNk/algazarra.jpg", "JPEG", col1X + (col1Width - 35) / 2, marginTop + 5, 40, 20);
+        } else if (!isAlgazarraCoralChecked && isCoralUnimedChecked) {
+            doc.addImage("https://i.ibb.co/kcVRD4z/logo-coral-unimed.png", "JPEG", col1X + (col1Width - 30) / 2, marginTop + 5, 30, 20);
+
+        }
+
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "normal");
+        doc.text("CNPJ 11.510.597/0001-30", col2X + col2Width / 2, marginTop + 10, { align: 'center' });
+        doc.text("Praça Costa Pereira, 52, Ed. Michellini - sala 1104,", col2X + col2Width / 2, marginTop + 15, { align: 'center' });
+        doc.text("Centro, Vitória - ES, CEP 29010-080", col2X + col2Width / 2, marginTop + 20, { align: 'center' });
+
+        doc.addImage("https://i.ibb.co/6w8N1kp/instituto-Todos-Cantos.jpg", "JPEG", col3X + (col3Width - 30) / 2, marginTop + 5, 30, 20);
+
+        // Desenhar área do título e subtítulo
+        doc.rect(marginLeft, marginTop + headerHeight + 2, 170, 5);
+        doc.text(subtitulo, marginLeft + 85, marginTop + headerHeight + 6, { align: 'center' });
+
+        doc.setFontSize(9);
+        if (isAlgazarraCoralChecked) {
+            // Uma linha apenas
+            doc.rect(marginLeft, marginTop + headerHeight + 7, 170, 5); 
+            doc.text(
+                "Ensaios na sexta-feira de 19h00 às 20h30 e sábado de 9h00 às 12h00 - Local: EMEF Ceciliano Abel de Almeida",
+                marginLeft + 85,
+                marginTop + headerHeight + 11,
+                { align: 'center' }
+            );
+        } else if (isCoralUnimedChecked) {
+            // Duas linhas
+            doc.rect(marginLeft, marginTop + headerHeight + 7, 170, 9);
+
+            doc.text(
+                "Ensaios na segunda-feira e terça-feira: 19:30 às 21h -",
+                marginLeft + 85,
+                marginTop + headerHeight + 11,
+                { align: 'center' }
+            );
+
+            doc.text(
+                "Local: Auditório da Sede ADM. da Unimed – Av. Cezar Hilal, 700 – Bento Ferreira – Vitória",
+                marginLeft + 85,
+                marginTop + headerHeight + 15,
+                { align: 'center' }
+            );
+        }
+
+        // Coletar dias selecionados com contagem de cliques
+        const { mes, dias } = coletarSelecionados();
+        if (mes === null || Object.keys(dias).length === 0) {
+            exibirMensagem("Nenhum dia selecionado para gerar o PDF.", "erro");
+            return;
+        }
+
+        const diasComContagem = dias; // { dia: contagem }
+        const diasParaTabela = [];
+        for (const [dia, contagem] of Object.entries(diasComContagem)) {
+            for (let i = 0; i < contagem; i++) {
+                diasParaTabela.push(parseInt(dia, 10));
+            }
+        }
+
+        console.log("Dias para a tabela no PDF:", diasParaTabela);
+
+        doc.autoTable({
+            startY: marginTop + headerHeight + (isCoralUnimedChecked ? 17 : 15),
+            margin: { left: marginLeft, right: pageWidth - 170 },
+            head: [
+                [
+                    { content: 'ORD', rowSpan: 2, styles: { valign: 'middle', halign: 'center' } },
+                    { content: 'Coristas Soprano', rowSpan: 2, styles: { valign: 'middle', halign: 'center' } },
+                    { content: 'Vocação', rowSpan: 2, styles: { valign: 'middle', halign: 'center' } },
+                    { 
+                        content: `Mês: ${meses[mes]} - Dias Letivos: ${diasParaTabela.length}`,
+                        colSpan: diasParaTabela.length,
+                        styles: {
+                            valign: 'middle',
+                            halign: 'center',
+                            whiteSpace: 'nowrap', 
+                            cellWidth: 'auto'
+                        }
+                    },
+                    { content: 'Total', colSpan: 2, styles: { valign: 'middle', halign: 'center' } }
+                ],
+                [
+                    ...diasParaTabela.map(dia => dia.toString()),
+                    'Faltas',
+                    'Presença'
+                ]
+            ],
+            body: alunos.map((aluno, index) => {
+                const presencas = Array(diasParaTabela.length).fill('');
+
+                // Se o aluno é desistente, substituir "Faltas" e "Presença" por uma única célula "Desistente"
+                if (aluno.status === 'Desistente') {
+                    return [
+                        index + 1,
+                        aluno.nome,
+                        aluno.vocacao,
+                        ...presencas,
+                        { 
+                            content: 'Desistente', 
+                            colSpan: 2,
+                            styles: { textColor: [255,0,0], halign: 'center', fontStyle: 'bold' }
+                        }
+                    ];
+                } else {
+                    // Aluno não desistente, mantém as colunas normais
+                    return [
+                        index + 1,
+                        aluno.nome,
+                        aluno.vocacao,
+                        ...presencas,
+                        '',
+                        ''
+                    ];
+                }
+            }),
+            theme: 'grid',
+            styles: { fontSize: 10, lineWidth: 0.1, lineColor: [0, 0, 0] },
+            tableWidth: 170,
+            didParseCell: function (data) {
+                // Destacar apenas o NOME do aluno em vermelho se for Desistente
+                if (data.row.raw && data.row.raw.status === 'Desistente' && data.section === 'body' && data.column.index === 1) {
+                    data.cell.styles.textColor = [255, 0, 0]; 
+                }
+            }
+        });
+
+        // Salvando o arquivo PDF
+        doc.save("tabela_formatada_com_alunos.pdf");
+        exibirMensagem("PDF gerado com sucesso!", "sucesso");
+    } catch (error) {
+        console.error("Erro ao gerar PDF: ", error);
+        exibirMensagem("Ocorreu um erro ao gerar o PDF. Por favor, tente novamente.", "erro");
+    }
+}
+
+
+
+    // Função para resetar seleções
+    function resetarSelecoes() {
+        console.log("Iniciando reset das seleções.");
+        
+        // Verificar se o objeto de contadores existe
+        if (window.diaContadores) {
+            // Iterar sobre todas as chaves no objeto de contadores
+            for (let key in window.diaContadores) {
+                if (window.diaContadores.hasOwnProperty(key)) {
+                    // Separar o mês e o dia a partir da chave
+                    let [mes, dia] = key.split('-').map(Number);
+                    
+                    // Selecionar o elemento correspondente no calendário
+                    const calendario = calendariosContainer.getElementsByClassName('calendario')[mes];
+                    if (calendario) {
+                        const dias = calendario.getElementsByClassName('dias-mes')[0].getElementsByTagName('div');
+                        
+                        for (let j = 0; j < dias.length; j++) {
+                            if (parseInt(dias[j].dataset.dia) === dia) {
+                                // Remover a classe 'selecionado'
+                                dias[j].classList.remove('selecionado');
+                                
+                                // Remover o elemento de contador
+                                const contadorSpan = dias[j].querySelector('.contador');
+                                if (contadorSpan) {
+                                    dias[j].removeChild(contadorSpan);
+                                }
+                                
+                                // Remover o atributo 'data-dia'
+                                dias[j].removeAttribute('data-dia');
+                                
+                                console.log(`Dia ${dia} do mês ${mes + 1} deselecionado e resetado.`);
+                                break; // Sair do loop interno após encontrar o dia
+                            }
+                        }
+                    }
+                }
+            }
+            
+            // Resetar o objeto de contadores
+            window.diaContadores = {};
+            console.log("Todos os contadores de cliques foram resetados.");
+        } else {
+            console.log("Nenhum dia selecionado para resetar.");
+        }
+        
+        exibirMensagem("Todas as seleções foram resetadas.", "sucesso");
+    }
+
+    // Adicionar evento ao botão "Resetar Seleções"
+    document.getElementById('btn-resetar-selecoes').addEventListener('click', resetarSelecoes);
+
+    // Atualização dos Event Listeners para utilizar a nova função generatePDF
+    // cahama a função generatePDF
+    const btnExportPDF = document.getElementById('btn-export-pdf');
+    const oldExportListener = btnExportPDF.onclick;
+    if (oldExportListener) {
+        btnExportPDF.removeEventListener('click', oldExportListener);
+    }
+    // Adicionando o novo listener
+    btnExportPDF.addEventListener('click', generatePDF);
+    console.log("Event listener do botão 'Exportar PDF' atualizado para 'generatePDF'.");
+
+  </script>
+
+</body>
+</html>

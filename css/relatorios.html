@@ -1,0 +1,241 @@
+    
+<style>
+    /* Estilos Globais */
+    body {
+        // margin: 0;
+        //font-family: 'Roboto', sans-serif;
+        //background-color: #ad3587; //cor de fundo roxa divindo a pagina
+    }
+
+    /* Estilos para a Área de Dashboard */
+    .dashboard-filtros {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+    }
+
+    /* Estilos para o Cabeçalho do Dashboard */
+   .dashboard-filtros header {
+        background-color: #ffffff;
+        color: rgb(186, 15, 228);
+        padding: 15px 20px;
+        text-align: center;
+        width: 100%;
+        box-sizing: border-box;
+        border-bottom: 2px solid #b44fea;
+    }
+
+    /* Wrapper para Filtros e Conteúdo Principal */
+    .dashboard-filtros .content-wrapper {
+        display: flex;
+        flex: 1;
+        overflow: hidden;
+    }
+
+    /* Estilos para a Área de Filtros */
+    .dashboard-filtros #menuFiltros {
+        width: 250px; /* Largura fixa para a barra lateral de filtros */
+        padding: 20px;
+        background-color: #ffffff;
+        box-shadow: 2px 0px 10px rgba(0, 0, 0, 0.1);
+        box-sizing: border-box;
+        overflow-y: auto;
+    }
+
+    .dashboard-filtros #menuFiltros h2 {
+        font-weight: 500;
+        font-size: 18px;
+        margin-bottom: 20px;
+        border-bottom: 1px solid #ddd;
+        padding-bottom: 10px;
+    }
+
+    .dashboard-filtros #menuFiltros label {
+        display: flex;
+        align-items: center;
+        font-size: 14px;
+        color: #333;
+        margin-bottom: 15px;
+        cursor: pointer;
+    }
+
+    .dashboard-filtros #menuFiltros label input[type="checkbox"] {
+        margin-right: 10px;
+        appearance: none;
+        width: 18px;
+        height: 18px;
+        border: 2px solid #4CAF50;
+        border-radius: 3px;
+        position: relative;
+        transition: background-color 0.2s ease, border-color 0.2s ease;
+    }
+
+    .dashboard-filtros #menuFiltros label input[type="checkbox"]:checked {
+        background-color: #4CAF50;
+        border-color: #4CAF50;
+    }
+
+    .dashboard-filtros #menuFiltros label input[type="checkbox"]:checked:after {
+        content: "";
+        position: absolute;
+        top: 2px;
+        left: 5px;
+        width: 6px;
+        height: 10px;
+        border: solid white;
+        border-width: 0 2px 2px 0;
+        transform: rotate(45deg);
+    }
+
+    .dashboard-filtros #menuFiltros button {
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        font-size: 14px;
+        cursor: pointer;
+        border-radius: 5px;
+        transition: background-color 0.3s ease, transform 0.3s ease;
+        display: block;
+        margin-top: 20px;
+        width: 100%;
+    }
+
+    .dashboard-filtros #menuFiltros button:hover {
+        background-color: #45a049;
+        transform: scale(1.05);
+    }
+
+    .dashboard-filtros #menuFiltros button:focus {
+        outline: none;
+    }
+
+    /* Estilos para o Conteúdo Principal */
+    .dashboard-filtros .mainContent {
+        flex: 1;
+        padding: 20px;
+        background-color: #ffffff;
+        box-sizing: border-box;
+        overflow-y: auto;
+    }
+
+    .dashboard-filtros .chart-container {
+        width: 100%;
+        margin: auto;
+    }
+
+    /* Estilos para Organizar os Gráficos em Cards */
+    .dashboard-graficos .card-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+
+    .dashboard-graficos .card {
+        width: 48%;
+        background-color: #f9f9f9;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+    }
+
+    .dashboard-graficos .card h3 {
+        text-align: center;
+        font-size: 16px;
+        margin-bottom: 15px;
+    }
+
+    .dashboard-graficos canvas {
+        max-width: 100% !important;
+        max-height: 300px;
+    }
+
+    /* Estilos para o Indicador de Carregamento */
+    .loading-indicator {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: rgba(255, 255, 255, 0.9);
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        text-align: center;
+        font-size: 1.2rem;
+        color: #333;
+        z-index: 1000;
+    }
+
+    /* Estilos para Notificações */
+    .notificacao {
+        position: fixed;
+        top: 20px; /* Ajuste conforme necessário para não sobrepor o header principal */
+        right: 20px;
+        padding: 15px;
+        border-radius: 5px;
+        display: none;
+        z-index: 1001;
+        min-width: 200px;
+        text-align: center;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    .notificacao.sucesso {
+        background-color: #4CAF50;
+        color: white;
+    }
+
+    .notificacao.erro {
+        background-color: #f44336;
+        color: white;
+    }
+
+    /* Botão de Exportar PDF */
+    #exportarPDF {
+        background-color: #2196F3;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        font-size: 14px;
+        cursor: pointer;
+        border-radius: 5px;
+        transition: background-color 0.3s ease, transform 0.3s ease;
+        display: block;
+        margin-top: 20px;
+        width: 100%;
+    }
+
+    #exportarPDF:hover {
+        background-color: #0b7dda;
+        transform: scale(1.05);
+    }
+
+    #exportarPDF:focus {
+        outline: none;
+    }
+
+    /* Responsividade Aprimorada */
+    @media (max-width: 768px) {
+        .dashboard-filtros #menuFiltros {
+            width: 100%;
+            box-shadow: none;
+            padding: 10px;
+        }
+
+        .dashboard-filtros .mainContent {
+            padding: 10px;
+        }
+
+        .dashboard-graficos .card {
+            width: 100%;
+        }
+
+        .notificacao {
+            top: 80px; /* Ajuste conforme necessário */
+        }
+    }
+</style>

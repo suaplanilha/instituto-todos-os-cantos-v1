@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controle de Alunos</title>
+
+    <!-- Google Fonts e Material Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <!-- Scripts de Performance (Async e Defer) -->
+    <script src="https://apis.google.com/js/api.js" async></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-XXXXX-Y"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-XXXXX-Y');
+    </script>
+
+    <!-- Google Tag Manager -->
+    <script defer src="https://www.googletagmanager.com/gtag/js?id=GTM-XXXX"></script>
+    <script>
+        (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start': new Date().getTime(),event:'gtm.js'});
+        var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;
+        j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+        })(window,document,'script','dataLayer','GTM-XXXX');
+    </script>
+
+
+    <!-- Incluir jQuery antes dos scripts personalizados -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Incluir a biblioteca Inputmask -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/inputmask/5.0.8/inputmask.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.8/jquery.inputmask.min.js"></script>
+
+    <!-- Incluir DataTables JS depois do jQuery -->
+    <script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js" defer></script>
+
+   
+    <!-- Incluir estilos em ordem correta -->
+   
+    <?!= include('css/style') ?>
+    <?!= include('css/listapdf') ?>
+    <?!= include('css/InsercaoFrequenciaCorais') ?>
+    <?!= include('css/listasgerais') ?>
+    <?!= include('css/pesquisaSatisfacao') ?>
+    <?!= include('css/relatorios') ?>
+
+</head>
+<body class="app-layout">
+
+    <!-- Inclui o header -->
+<header class="header"> 
+  <div class="header-content">
+    <img src="https://i.ibb.co/HVK8Sqk/isntituto-cantos.png" id="user_avatar2" class="avatar" border="0">
+    <!--  <h1 id="animated-title">INSTITUTO TODOS OS CANTOS</h1> -->
+  </div>
+</header>
+
+    <!-- Container flex para menu e conteúdo -->
+    <div class="main-container">
+
+        <!-- Barra Lateral/Menu -->
+       <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+<nav id="sidebar">
+    <div id="sidebar_content">
+        <div id="user">
+           
+                <img src="https://i.ibb.co/PNrHLgf/isntituto-cantos.png" id="user_avatar" alt="Avatar" border="0">
+           
+            <p id="user_infos">
+                <span class="item-description">Instituto</span>
+                <span class="item-description">Todos os Cantos</span>
+            </p>
+        </div>
+
+        <!-- Itens do Menu -->
+       <ul id="side_items">
+    <!-- Item do Menu Cadastro -->
+    <li class="side-item">
+        <a href="#" class="menu-item" onclick="loadPage(event, 'html/cadastro')" title="Cadastro Completo">
+            <i class="material-icons">person_add</i>
+            <span class="item-description">Cadastro</span>
+        </a>
+    </li>
+
+    <!-- Item do Menu Relatórios -->
+    <li class="side-item">
+        <a href="#" class="menu-item" onclick="loadPage(event, 'html/listapdf')" title="Impressão de Listas">
+            <i class="material-icons">format_list_numbered</i>
+            <span class="item-description">Impressão de listas</span>
+        </a>
+    </li>
+
+    <!-- Item do Menu Relatórios Gerais -->
+    <li class="side-item">
+        <a href="#" class="menu-item" onclick="loadPage(event, 'html/listasgerais')" title="Impressão de Listas Gerais">
+            <i class="material-icons">format_list_numbered</i>
+            <span class="item-description">Impressão de listas gerais</span>
+        </a>
+    </li>
+
+    <!-- Item do Menu Relatórios -->
+    <li class="side-item">
+        <a href="#" class="menu-item" onclick="loadPage(event, 'html/relatorios')" title="Relatórios Detalhados">
+            <i class="material-icons">assessment</i>
+            <span class="item-description">Relatórios</span>
+        </a>
+    </li>
+
+    <!-- Item do Menu Pesquisa -->
+    <li class="side-item">
+        <a href="#" class="menu-item" onclick="loadPage(event, 'html/pesquisaSatisfacao')" title="Pesquisa de Satisfação">
+            <i class="material-icons">library_add_check</i>
+            <span class="item-description">Pesquisa</span>
+        </a>
+    </li>
+
+     <li class="side-item">
+        <a href="#" class="menu-item" onclick="loadPage(event, 'html/InsercaoFrequenciaCorais')" title="Inserir Frequência Coral">
+             <i class="material-icons">music_note</i>
+            <span class="item-description">Inserir Frequência Coral</span>
+        </a>
+    </li>
+
+    <li class="side-item">
+        <a href="#" class="menu-item" onclick="loadPage(event, 'html/aniversariante')" title="Aniversariantes do Mês">
+             <i class="material-icons">cake</i>
+            <span class="item-description">Aniversariantes do Mês</span>
+        </a>
+    </li>
+</ul>
+
+        <!-- Botão para ocultar/mostrar o menu -->
+        <button id="open_btn">
+            <i id="open_btn_icon" class="fa-solid fa-chevron-right"></i>
+        </button>
+    </div>
+
+    <!-- Botão de Logout -->
+    <div id="logout">
+        <button id="logout_btn">
+            <i class="fa-solid fa-right-from-bracket"></i>
+            <span class="item-description">Logout</span>
+        </button>
+    </div>
+</nav>
+
+<!-- <script>
+    document.getElementById('open_btn').addEventListener('click', function () {
+        document.getElementById('sidebar').classList.toggle('open-sidebar');
+        console.log('Menu lateral alternado.');
+    });
+</script> -->
+
+
+
+
+        <!-- Área de Conteúdo Principal -->
+        <main id="content" class="content-area">
+            <h1>Bem-vindo(a)</h1>
+            <!-- O conteúdo dinâmico será carregado aqui -->
+        </main>
+    </div>
+
+    <!-- Status de mensagens -->
+    <div id="status" class="status-message"></div>
+
+    <!-- Inclui o rodapé -->
+<footer class="footer">
+  <p>Instituto-Todos-Cantos </p>
+  <p>&copy; 2024 SuaplanilhaExcel&Sheets </p>
+</footer>
+
+    <!-- Inclui o script global -->
+    
+
+
+       <?!= include('html/scripts') ?>
+
+  
+</body>
+</html>

@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Inserção de Frequências dos Corais</title>
+  
+  <!-- CSS do DataTables -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.min.css">
+  
+  <!-- css/insercaoFrequencia-->
+
+</head>
+<body>
+  
+  <!-- Spinner de carregamento -->
+  <div id="loadingSpinner" style="display: none; position: fixed; top: 50vh; left: 50vw; transform: translate(-50%, -50%); z-index: 1000;">
+    <div class="spinner" style="border: 0.5rem solid #f3f3f3; border-top: 0.5rem solid #3498db; border-radius: 50%; width: 3rem; height: 3rem; animation: spin 2s linear infinite;"></div>
+  </div>
+
+   <!-- <div class="container">
+    <h2>Inserção de Frequências dos Corais - <span id="currentYear"></span></h2> -->
+
+      <div class="container-header">
+        <div class="header">
+          <h1>Inserção de Frequências dos Corais - <span id="currentYear"></span></h1>
+        </div>
+        </div>
+
+<div class="container">
+    <!-- Contêiner principal da página filha com classe renomeada -->
+    <div class="child-main-container">
+      
+      <!-- Barra superior para os meses -->
+      <div class="top-bar">
+        <!-- Contêiner dos meses no topo -->
+        <div class="month-container" id="monthContainer">
+          <!-- Botões dos meses são gerados via JS -->
+        </div>
+      </div>
+
+      <!-- Contêiner para alinhar checkbox-container e calendário e cards -->
+      <div class="alignment-container">
+        
+        <!-- Sidebar para checkboxes -->
+        <div class="checkbox-container">
+          <label class="checkbox-label">
+            <input type="checkbox" id="AlgazarraCoral" class="checkbox-input" checked />
+            <span class="checkbox-custom"></span>
+            Algazarra Coral
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" id="CoralUnimed" class="checkbox-input" />
+            <span class="checkbox-custom"></span>
+            Coral Unimed
+          </label>
+        </div>
+
+        <!-- Contêiner para calendário e cards -->
+        <div class="calendar-cards-container">
+          <!-- Contêiner principal para o calendário -->
+          <div class="calendario-grid">
+            <div class="calendar" id="calendar">
+              <!-- Dias do calendário serão gerados dinamicamente -->
+            </div>
+          </div>
+
+          <!-- Contêiner para os cards -->
+          <div class="cards-container">
+            <div id="CardMes" class="card">
+              <h3>Aulas no Mês</h3>
+              <p id="aulasMes">0</p>
+            </div>
+            <div id="CardAno" class="card">
+              <h3>Total de Aulas no Ano</h3>
+              <p id="aulasAno">0</p>
+            </div>
+          </div>
+        </div>
+      
+      </div>
+
+      <!-- Contêiner para o controle de frequência -->
+      <div class="TableFrequencia-container">
+        <h2>Controle de Frequência</h2>
+        <div class="filter-container">
+          <label for="btnfiltroAno">Ano</label>
+          <input type="text" id="btnfiltroAno" class="btnfiltroMes" placeholder="Ex: 2024">
+
+          <label for="btnfiltroMes">Mês</label>
+          <input type="text" id="btnfiltroMes" class="btnfiltroMes" placeholder="Ex: Jan">
+
+          <label for="btnfiltroAluno">Aluno</label>
+          <input type="text" id="btnfiltroAluno" class="btnfiltroaluno" placeholder="Nome do Aluno">
+        </div>
+
+        <!-- Tabela para exibir os dados -->
+        <table id="tabelaFrequencia" class="display" style="width:100%">
+          <thead>
+            <tr>
+              <th rowspan="2">Nome Completo</th>
+              <th rowspan="2">Ano</th>
+              <th rowspan="2">Mês</th>
+              <th rowspan="2">Tipo Coral</th>
+              <th colspan="3">Frequência</th>
+              <!--  <th rowspan="2">Frequência Anual</th> -->
+            </tr>
+            <tr>
+              <th>Presente</th>
+              <th>Falta</th>
+              <th>Atestado</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Dados dinâmicos serão carregados aqui -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Modal de Presença -->
+      <div id="modalPresenca" class="modal" style="display: none;">
+        <div class="modal-content">
+          <!-- Card para o título -->
+          <div class="modal-header card">
+            <h3>Lista de Presença - Dia</h3>
+          </div>
+
+          <!-- Card para Hora de Início e Fim -->
+          <div class="modal-horarios card">
+            <label for="horaInicio">Hora de Início:</label>
+            <input type="time" id="horaInicio">
+            <label for="horaFim">Hora de Fim:</label>
+            <input type="time" id="horaFim">
+          </div>
+
+          <!-- Card para o título 'Coristas' -->
+          <div class="modal-coristas card">
+            <h4>CORISTAS</h4>
+          </div>
+
+          <!-- Tabela de Presença dos Coristas -->
+          <table id="studentTable">
+            <thead>
+              <tr>
+                <th>Ord</th>
+                <th>Nome do Aluno</th>
+                <th>Presença</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="studentList">
+              <!-- As linhas dos alunos serão populadas dinamicamente -->
+            </tbody>
+          </table>
+
+          <!-- Botões -->
+          <div class="modal-actions">
+            <button id="salvar" class="btn-save">Salvar</button>
+            <button id="fechar" class="btn-close" onclick="fecharModal()">Fechar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+  <!-- DataTables -->
+  <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+
+  <!-- Seu script principal -->
+  <script>
+    $(document).ready(function() {
+  console.log("Iniciando script principal.");
+
+  // Definição das variáveis globais dentro do escopo do ready
+  const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun',
+                 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+  const diasSemana = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S']; // Cabeçalhos simplificados
+  let mesAtivo = new Date().getMonth() + 1; // Mês atual (1-12)
+  const anoAtual = new Date().getFullYear(); // Ano atual
+
+  try {
+    // Preencher o ano corrente no título da página
+    $('#currentYear').text(anoAtual);
+    console.log("Ano corrente preenchido:", $('#currentYear').text());
+
+    const monthContainer = $('#monthContainer');
+    console.log("Contêiner dos meses obtido:", monthContainer);
+
+    // Gerar os botões dos meses dinamicamente
+    gerarBotoesMeses();
+
+    // Define o mês ativo e atualiza o calendário e os cards
+    setActiveMonth(mesAtivo);
+
+    // Carrega a tabela de frequência
+    carregarTabelaFrequencia();
+
+    // Adicionar event listener aos checkboxes para recarregar a tabela quando o coral selecionado mudar
+    $('.checkbox-input').on('change', function() {
+      console.log(`Checkbox ${this.id} alterado para ${this.checked}`);
+
+      if (this.checked) {
+        // Desmarcar todas as outras checkboxes
+        $('.checkbox-input').not(this).prop('checked', false).removeClass('checked');
+        console.log(`Checkbox ${this.id} está marcada. Outras checkboxes desmarcadas.`);
+      } else {
+        console.log(`Checkbox ${this.id} foi desmarcada.`);
+      }
+
+      carregarTabelaFrequencia();
+    });
+
+    // Atualizar a classe 'checked' ao carregar a página
+    $('.checkbox-input').each(function() {
+      if ($(this).is(':checked')) {
+        $(this).addClass('checked');
+        console.log(`Checkbox ${this.id} marcado como 'checked'.`);
+      } else {
+        $(this).removeClass('checked');
+        console.log(`Checkbox ${this.id} removido da classe 'checked'.`);
+      }
+    });
+
+    // Inicializar o DataTable
+    inicializarDataTable();
+
+    // Event listeners para os inputs de filtro
+    $('#btnfiltroAno, #btnfiltroMes, #btnfiltroAluno').on('keyup change clear', function() {
+      aplicarFiltros();
+    });
+
+    // Event listener para o botão de salvar no modal
+    $('#salvar').on('click', function() {
+      console.log("Botão 'Salvar' clicado.");
+      salvarPresenca();
+    });
+
+  } catch (error) {
+    console.error("Erro durante a inicialização:", error);
+  }
+
+  // ==================== FUNÇÕES ====================
+
+  /**
+   * Função para obter o número de dias em um determinado mês e ano
+   * @param {number} mes - Mês desejado (1-12)
+   * @param {number} ano - Ano desejado
+   * @returns {number} - Número de dias no mês
+   */
+  function obterDiasNoMes(mes, ano) {
+    try {
+      const dias = new Date(ano, mes, 0).getDate();
+      console.log(`Número de dias no mês ${mes} do ano ${ano}: ${dias}`);
+      return dias;
+    } catch (error) {
+      console.error("Erro na função 'obterDiasNoMes':", error);
+      return 0;
+    }
+  }
+
+  /**
+   * Função para obter o dia da semana do primeiro dia do mês
+   * @param {number} mes - Mês desejado (1-12)
+   * @param {number} ano - Ano desejado
+   * @returns {number} - Dia da semana (0=Domingo)
+   */
+  function obterDiaSemanaPrimeiroDia(mes, ano) {
+    try {
+      const diaSemana = new Date(ano, mes - 1, 1).getDay();
+      console.log(`Dia da semana do primeiro dia do mês ${mes} do ano ${ano}: ${diaSemana}`);
+      return diaSemana;
+    } catch (error) {
+      console.error("Erro na função 'obterDiaSemanaPrimeiroDia':", error);
+      return 0;
+    }
+  }
+
+  /**
+   * Função para gerar os botões dos meses dinamicamente.
+   */
+  function gerarBotoesMeses() {
+    console.log("Iniciando geração dinâmica dos botões dos meses.");
+    try {
+      meses.forEach((mes, index) => {
+        console.log(`Criando botão para o mês: ${mes}`);
+        const buttonMes = $('<button>')
+          .addClass('mes-button')
+          .text(mes)
+          .attr('data-mes', index + 1);
+
+        // Verificar se o mês atual é o ativo
+        if (index + 1 === mesAtivo) {
+          buttonMes.addClass('active');
+          console.log(`Botão do mês ${mes} marcado como ativo.`);
+        }
+
+        // Evento de clique no mês para gerar o calendário correspondente
+        buttonMes.on('click', function() {
+          const selectedMes = parseInt($(this).attr('data-mes'));
+          console.log(`Botão do mês ${mes} clicado. Mês selecionado: ${selectedMes}`);
+          setActiveMonth(selectedMes);
+        });
+
+        // Adiciona o mês gerado ao container como elemento DOM
+        buttonMes.appendTo(monthContainer);
+        console.log(`Botão do mês ${mes} adicionado ao container.`);
+      });
+      console.log("Geração dinâmica dos botões dos meses concluída.");
+    } catch (error) {
+      console.error("Erro na função 'gerarBotoesMeses':", error);
+    }
+  }
+
+  /**
+ * Função para definir o mês ativo, atualizar a classe 'active', gerar o calendário e atualizar os cards.
+ * @param {number} mes - Número do mês (1-12).
+ */
+function setActiveMonth(mes) {
+  console.log(`Definindo o mês ativo para: ${mes}`);
+  mesAtivo = mes; // Atualiza o mês ativo
+
+  // Atualizar a classe 'active' nos botões
+  console.log("Atualizando classes 'active' nos botões dos meses.");
+  $('.mes-button').each(function() {
+    if (parseInt($(this).attr('data-mes')) === mes) {
+      $(this).addClass('active');
+      console.log(`Botão do mês ${$(this).text()} marcado como ativo.`);
+    } else {
+      $(this).removeClass('active');
+      console.log(`Botão do mês ${$(this).text()} desmarcado.`);
+    }
+  });
+
+  // Chamar a função que gera o calendário para o mês selecionado
+  console.log(`Gerando calendário para o mês ${mesAtivo} e ano ${anoAtual}.`);
+  gerarCalendario(mesAtivo, anoAtual);
+
+  // Chamar a função para atualizar as contagens
+  console.log(`Atualizando contagens de aulas para o mês ${mesAtivo} e ano ${anoAtual}.`);
+  RecebeMesAnoContagem(mesAtivo, anoAtual);
+
+  // Recarregar a tabela de frequência com base no mês ativo e tipo de coral selecionado
+  console.log(`Recarregando a tabela de frequência para o mês ${mesAtivo}.`);
+  carregarTabelaFrequencia();
+}
+
+  /**
+   * Função para gerar o calendário baseado no mês e ano selecionados
+   * @param {number} mes - Mês selecionado (1-12)
+   * @param {number} ano - Ano selecionado
+   */
+  function gerarCalendario(mes, ano) {
+    console.log(`Gerando calendário para o mês ${mes} e ano ${ano}.`);
+    try {
+      const calendar = $('#calendar'); // Contêiner do calendário
+      calendar.empty(); // Limpa o calendário atual antes de gerar um novo
+      console.log("Calendário limpo.");
+
+      // Criar uma div para o grid do calendário, contendo cabeçalhos e dias
+      const calendarioGrid = $('<div>').addClass('calendario-grid');
+      console.log("Div 'calendario-grid' criada.");
+
+      // Adicionar cabeçalhos dos dias da semana
+      diasSemana.forEach((dia, index) => {
+        const divHeader = $('<div>').addClass('day-header').text(dia);
+        if (index === 0 || index === 6) { // Domingo e Sábado
+          divHeader.addClass('weekend');
+          console.log(`Cabeçalho do dia ${dia} marcado como fim de semana.`);
+        }
+        calendarioGrid.append(divHeader); // Adiciona os cabeçalhos ao grid
+      });
+      console.log("Cabeçalhos dos dias da semana adicionados ao calendário.");
+
+      // Número de dias no mês selecionado
+      const diasNoMes = obterDiasNoMes(mes, ano);
+
+      // Determina em qual dia da semana o mês começa
+      let diaSemanaInicio = obterDiaSemanaPrimeiroDia(mes, ano);
+      if (diaSemanaInicio === 0) diaSemanaInicio = 7; // Ajusta para que a semana comece na segunda
+      console.log(`Dia da semana ajustado para início do mês: ${diaSemanaInicio}`);
+
+      // Preencher os dias em branco no início do mês (dias anteriores ao primeiro do mês)
+      for (let i = 1; i < diaSemanaInicio; i++) {
+        const divVazio = $('<div>').addClass('vazio');
+        calendarioGrid.append(divVazio); // Adiciona dias vazios ao grid
+        console.log("Dia vazio adicionado ao calendário.");
+      }
+
+      // Gerar os dias do mês e adicioná-los ao calendário
+      for (let dia = 1; dia <= diasNoMes; dia++) {
+        const divDia = $('<div>').addClass('day').text(dia);
+        console.log(`Criando dia ${dia} do mês.`);
+
+        // Identificar finais de semana (Sábado e Domingo)
+        const diaSemanaAtual = (diaSemanaInicio + dia - 2) % 7;
+        if (diaSemanaAtual === 0 || diaSemanaAtual === 6) { // Domingo e Sábado
+          divDia.addClass('weekend'); // Adiciona uma classe especial para finais de semana
+          console.log(`Dia ${dia} marcado como fim de semana.`);
+        }
+
+        // Adiciona um evento de clique para abrir o modal ao clicar no dia
+        divDia.on('click', function() {
+          console.log(`Dia ${dia} clicado. Abrindo modal de presença.`);
+          abrirModal(dia); // Chama a função para abrir o modal de presença
+        });
+
+        // Adiciona o dia gerado ao calendário
+        calendarioGrid.append(divDia);
+        console.log(`Dia ${dia} adicionado ao calendário.`);
+      }
+
+      calendar.append(calendarioGrid); // Adiciona o grid completo ao calendário principal
+      console.log("Calendário completo adicionado ao DOM.");
+    } catch (error) {
+      console.error("Erro na função 'gerarCalendario':", error);
+    }
+  }
+
+  /**
+ * Função para atualizar os cards recebendo os dados do servidor.
+ * @param {number} mes - Número do mês (1-12).
+ * @param {number} ano - Ano corrente.
+ */
+function RecebeMesAnoContagem(mes, ano) {
+  console.log(`RecebeMesAnoContagem: Carregando contagens para o mês ${mes} e ano ${ano}.`);
+
+  // Mostrar o spinner de carregamento
+  console.log("Exibindo spinner de carregamento.");
+  $('#loadingSpinner').show();
+
+  // Obter o tipo de coral selecionado para passar ao servidor
+  const tipoCoral = obterTipoCoralSelecionado();
+  console.log(`Tipo de coral para contagem: ${tipoCoral}`);
+
+  // Chamar a função do servidor via Google Apps Script
+  google.script.run.withSuccessHandler(function(response){
+    console.log("Resposta do servidor recebida:", response);
+    // Atualiza os elementos do DOM com os dados recebidos
+    $('#aulasMes').text(response.aulasMes);
+    $('#aulasAno').text(response.aulasAno);
+    console.log(`Cards atualizados: aulasMes=${response.aulasMes}, aulasAno=${response.aulasAno}`);
+
+    // Ocultar o spinner de carregamento
+    console.log("Ocultando spinner de carregamento.");
+    $('#loadingSpinner').hide();
+  }).withFailureHandler(function(error){
+    console.error('Erro ao obter dados:', error);
+    alert('Ocorreu um erro ao carregar os dados. Por favor, tente novamente.');
+    // Ocultar o spinner de carregamento em caso de erro
+    console.log("Ocultando spinner de carregamento devido a erro.");
+    $('#loadingSpinner').hide();
+  }).TrazMesAnoContagem(mes, ano, tipoCoral); // Passa tipoCoral como terceiro parâmetro
+}
+
+  /**
+   * Função para abrir o modal de presença e buscar dados do servidor
+   * @param {number} dia - Dia selecionado
+   */
+  function abrirModal(dia) {
+    console.log(`Abrindo modal de presença para o dia ${dia}.`);
+    try {
+      const modal = $('#modalPresenca');
+      const studentList = $('#studentList');
+
+      // Verificar quais checkboxes estão marcadas
+      const isAlgazarraChecked = $('#AlgazarraCoral').is(':checked');
+      const isCoralUnimedChecked = $('#CoralUnimed').is(':checked');
+      console.log(`AlgazarraCoral está ${isAlgazarraChecked ? 'marcada' : 'desmarcada'}.`);
+      console.log(`CoralUnimed está ${isCoralUnimedChecked ? 'marcada' : 'desmarcada'}.`);
+
+      // Validar que pelo menos um filtro está selecionado
+      if (!isAlgazarraChecked && !isCoralUnimedChecked) {
+        console.log("Nenhum coral selecionado. Modal não será aberto.");
+        alert('Por favor, selecione um coral para continuar.');
+        return; // Não abre o modal se nenhum checkbox estiver marcado
+      }
+
+      // Definir o tipo de coral com base nas checkboxes marcadas
+      let tipoCoral = [];
+      if (isAlgazarraChecked) tipoCoral.push('AlgazarraCoral');
+      if (isCoralUnimedChecked) tipoCoral.push('CoralUnimed');
+      tipoCoral = tipoCoral.join(', '); // Pode ser múltiplos tipos
+      console.log(`Tipo de coral selecionado: ${tipoCoral}`);
+
+      // Obter o mês ativo e o ano corrente
+      const mesAtivoNome = $('.mes-button.active').text(); // Nome do mês ativo
+      const mesAtivoIndex = meses.indexOf(mesAtivoNome) + 1; // Posição do mês ativo (de 1 a 12)
+      console.log(`Mês ativo: ${mesAtivoNome} (${mesAtivoIndex}), Ano corrente: ${anoAtual}`);
+
+      // Formatar a data no formato ISO yyyy-mm-dd
+      const diaFormatado = ('0' + dia).slice(-2); // Garantir que o dia tenha 2 dígitos
+      const mesFormatado = ('0' + mesAtivoIndex).slice(-2); // Garantir que o mês tenha 2 dígitos
+      const dataCompleta = `${anoAtual}-${mesFormatado}-${diaFormatado}`; // Formatar a data como yyyy-mm-dd
+      console.log(`Data completa (ISO): ${dataCompleta}`);
+
+      // Converter a data para o formato PT-BR dd-mm-yyyy
+      const dataPTBR = `${diaFormatado}-${mesFormatado}-${anoAtual}`;
+      console.log(`Data completa (PT-BR): ${dataPTBR}`);
+
+      // Preencher o dia, mês e ano selecionado no header do modal
+      $('.modal-header h3').text(`Lista de Presença - ${dataPTBR} (${tipoCoral})`);
+      console.log("Título do modal atualizado.");
+
+      // Exibir spinner de carregamento e bloquear interações
+      console.log("Exibindo spinner de carregamento e desabilitando interações com o modal.");
+      $('#loadingSpinner').show();
+      modal.css('pointer-events', 'none'); // Desabilita interações com o modal enquanto carrega
+
+      // Limpar a lista de presença e os campos de hora
+      studentList.empty(); // Limpar o conteúdo da tabela antes de preencher novos dados
+      $('#horaInicio').val('');
+      $('#horaFim').val('');
+      console.log("Conteúdo do modal limpo.");
+
+      // Chamar a função no servidor para obter os alunos do coral selecionado
+      console.log(`Chamando função do servidor para obter alunos do coral: ${tipoCoral}`);
+      google.script.run.withSuccessHandler(function(alunos){
+        console.log("Resposta do servidor recebida: alunos", alunos);
+        // Ocultar o spinner de carregamento
+        console.log("Ocultando spinner de carregamento e habilitando interações com o modal.");
+        $('#loadingSpinner').hide();
+        modal.css('pointer-events', 'auto'); // Habilita interações novamente
+
+        // Preencher a lista de alunos no modal
+        alunos.forEach((aluno, index) => {
+          console.log(`Adicionando aluno ${index + 1}: ${aluno.nome}, Status: ${aluno.status}`);
+          // Criar uma linha para cada aluno
+          const row = $('<tr>');
+
+          // Adicionar uma classe especial para estilizar a linha de alunos com status "Desistente"
+          if (aluno.status === 'Desistente') {
+            row.addClass('desistente'); // Adiciona a classe 'desistente'
+            console.log(`Aluno ${aluno.nome} marcado como 'Desistente'.`);
+          }
+
+          // Coluna 1: Ordem (baseada no índice)
+          const ordemCell = $('<td>').text(index + 1);
+          row.append(ordemCell);
+
+          // Coluna 2: Nome do Aluno
+          const nomeCell = $('<td>').addClass('nomeCell').text(aluno.nome);
+          row.append(nomeCell);
+
+          // Coluna 3: Dropdown de Presença (Presente, Faltou, Atestado)
+          const statusCell = $('<td>').addClass('presencaDropdown');
+          const dropdown = $('<select>').append(
+            $('<option>').val('Presente').text('Presente'),
+            $('<option>').val('Faltou').text('Faltou'),
+            $('<option>').val('Atestado').text('Atestado')
+          );
+
+          // Se o aluno for 'Desistente', desabilitar o dropdown e deixar o valor vazio
+          if (aluno.status === 'Desistente') {
+            dropdown.val(''); // Define o valor da dropdown como vazio
+            dropdown.prop('disabled', true); // Desabilita o dropdown
+            row.css('border', '2px solid #cc3b2c'); // Aplica a borda vermelha na linha
+            console.log(`Dropdown de presença desabilitado para o aluno ${aluno.nome}.`);
+          }
+
+          statusCell.append(dropdown);
+          row.append(statusCell);
+
+          // Coluna 4: Status do Aluno
+          const alunoStatusCell = $('<td>').addClass('statusCell').text(aluno.status);
+          row.append(alunoStatusCell);
+
+          // Adicionar a linha à tabela
+          studentList.append(row);
+          console.log(`Linha do aluno ${aluno.nome} adicionada à tabela de presença.`);
+        });
+
+        // Mostrar o modal
+        modal.show();
+        console.log("Modal de presença exibido.");
+      }).withFailureHandler(function(error){
+        console.error('Erro ao buscar alunos:', error);
+        alert('Erro ao carregar a lista de alunos. Por favor, tente novamente.');
+        $('#loadingSpinner').hide(); // Ocultar spinner em caso de erro
+        modal.css('pointer-events', 'auto'); // Reabilitar interações em caso de erro
+        console.log("Spinner ocultado e interações habilitadas após erro.");
+      }).obterAlunosPorCoral(tipoCoral); // Passa o tipo do coral selecionado para o servidor
+    } catch (error) {
+      console.error("Erro na função 'abrirModal':", error);
+    }
+  }
+
+  /**
+   * Função para inicializar o DataTable
+   */
+  function inicializarDataTable() {
+    console.log("Inicializando DataTable para #tabelaFrequencia.");
+    try {
+      $('#tabelaFrequencia').DataTable({
+        "paging": true,        // Ativar paginação
+        "lengthChange": true,  // Permitir ao usuário alterar o número de registros por página
+        "searching": true,     // Ativar a pesquisa (necessário para os filtros)
+        "ordering": true,      // Permitir ordenação das colunas
+        "info": true,          // Exibir informações da tabela
+        "autoWidth": false,    // Desativar largura automática
+        "dom": 'lrtip',        // Ocultar a barra de pesquisa global
+        "language": {
+          "sEmptyTable": "Nenhum registro encontrado",
+          "sInfo": "Mostrando de _START_ até _END_ de _TOTAL_ registros",
+          "sInfoEmpty": "Mostrando 0 até 0 de 0 registros",
+          "sInfoFiltered": "(Filtrados de _MAX_ registros)",
+          "sLengthMenu": "Mostrar _MENU_ registros",
+          "sLoadingRecords": "Carregando...",
+          "sProcessing": "Processando...",
+          "sZeroRecords": "Nenhum registro encontrado",
+          "sSearch": "Pesquisar",
+          "oPaginate": {
+            "sNext": "Próximo",
+            "sPrevious": "Anterior",
+            "sFirst": "Primeiro",
+            "sLast": "Último"
+          },
+          "oAria": {
+            "sSortAscending": ": Ordenar colunas de forma ascendente",
+            "sSortDescending": ": Ordenar colunas de forma descendente"
+          }
+        }
+      });
+      console.log("DataTable inicializado com sucesso.");
+    } catch (error) {
+      console.error("Erro durante a inicialização do DataTable:", error);
+    }
+  }
+
+  /**
+ * Função para carregar a tabela de frequência com os dados do servidor
+ */
+function carregarTabelaFrequencia() {
+  console.log("Iniciando carregamento da tabela de frequência.");
+  try {
+    const tipoCoral = obterTipoCoralSelecionado();
+    console.log(`Tipo de coral para carregamento da tabela: ${tipoCoral}`);
+    console.log(`Mês ativo para carregamento da tabela: ${mesAtivo}`);
+
+    // Exibir spinner de carregamento
+    console.log("Exibindo spinner de carregamento para tabela de frequência.");
+    $('#loadingSpinner').show();
+
+    // Chamar a função do servidor para obter os dados de frequência
+    google.script.run.withSuccessHandler(function(dados){
+      console.log("Dados de frequência recebidos do servidor:", dados);
+      // Ocultar o spinner de carregamento
+      console.log("Ocultando spinner de carregamento para tabela de frequência.");
+      $('#loadingSpinner').hide();
+
+      // Atualizar a tabela com os dados recebidos
+      atualizarTabelaFrequencia(dados);
+    }).withFailureHandler(function(error){
+      console.error('Erro ao carregar dados de frequência:', error);
+      alert('Erro ao carregar dados de frequência. Tente novamente.');
+      $('#loadingSpinner').hide();
+      console.log("Spinner ocultado após erro no carregamento da tabela de frequência.");
+    }).frequenciaCalculada(tipoCoral, mesAtivo); // Passa mesAtivo como segundo parâmetro
+  } catch (error) {
+    console.error("Erro na função 'carregarTabelaFrequencia':", error);
+  }
+}
+
+  /**
+   * Função para atualizar a tabela de frequência com os dados fornecidos
+   * @param {Array} dados - Array de objetos com os dados de frequência
+   */
+  function atualizarTabelaFrequencia(dados) {
+    console.log("Atualizando tabela de frequência com novos dados.");
+    try {
+      // Limpa o conteúdo existente da tabela
+      const tabela = $('#tabelaFrequencia').DataTable();
+      tabela.clear();
+      console.log("Tabela de frequência limpa.");
+
+      // Adiciona os novos dados
+      dados.forEach(dado => {
+        console.log(`Adicionando linha para o aluno: ${dado.nome}`);
+        tabela.row.add([
+          dado.nome,
+          dado.ano,
+          dado.mes,
+          dado.tipoCoral,
+          dado.presente,
+          dado.falta,
+          dado.atestado,
+          dado.frequenciaAnual
+        ]);
+      });
+      tabela.draw(false);
+      console.log("Tabela de frequência atualizada com novos dados.");
+    } catch (error) {
+      console.error("Erro na função 'atualizarTabelaFrequencia':", error);
+    }
+  }
+
+  /**
+   * Função para aplicar filtros personalizados na tabela de frequência
+   */
+  function aplicarFiltros() {
+    console.log("Aplicando filtros personalizados na tabela de frequência.");
+    try {
+      const tabela = $('#tabelaFrequencia').DataTable();
+      const anoFiltro = $('#btnfiltroAno').val().toLowerCase();
+      const mesFiltro = $('#btnfiltroMes').val().toLowerCase();
+      const alunoFiltro = $('#btnfiltroAluno').val().toLowerCase();
+
+      tabela.columns(1).search(anoFiltro);    // Coluna Ano
+      tabela.columns(2).search(mesFiltro);    // Coluna Mês
+      tabela.columns(0).search(alunoFiltro);  // Coluna Nome Completo
+
+      tabela.draw();
+      console.log("Filtros aplicados e tabela reprocessada.");
+    } catch (error) {
+      console.error("Erro na função 'aplicarFiltros':", error);
+    }
+  }
+
+  /**
+   * Função para obter o tipo de coral selecionado
+   */
+  function obterTipoCoralSelecionado() {
+    const algazarraCheckbox = $("#AlgazarraCoral");
+    const unimedCheckbox = $("#CoralUnimed");
+
+    // Ativar AlgazarraCoral por padrão se nenhum estiver selecionado
+    if (!algazarraCheckbox.is(':checked') && !unimedCheckbox.is(':checked')) {
+      console.log("Nenhum coral selecionado. Ativando AlgazarraCoral por padrão.");
+      algazarraCheckbox.prop('checked', true).addClass('checked');
+    }
+
+    let tipoCoral = [];
+    if (algazarraCheckbox.is(':checked')) tipoCoral.push('AlgazarraCoral');
+    if (unimedCheckbox.is(':checked')) tipoCoral.push('CoralUnimed');
+    tipoCoral = tipoCoral.join(', '); // Pode ser múltiplos tipos
+    console.log(`Tipo de coral selecionado: ${tipoCoral}`);
+
+    return tipoCoral;
+  }
+
+});
+
+/**
+ * Função para salvar os dados de presença no servidor
+ * Esta função está fora do $(document).ready) para que possa ser chamada via onclick diretamente
+ */
+function salvarPresenca() {
+  console.log("Iniciando processo de salvamento de presença.");
+  try {
+    // Capturar a data completa do modal (removendo "Lista de Presença - ")
+    const dataCompletaComCoral = $('.modal-header h3').text().replace('Lista de Presença - ', '');
+    console.log("Data completa com coral capturada:", dataCompletaComCoral);
+
+    if (!dataCompletaComCoral) {
+      console.error("Erro: Não foi possível capturar a data completa do modal.");
+      alert("Erro: Não foi possível capturar a data do modal.");
+      return;
+    }
+
+    // Separar a data do tipo de coral
+    const [dataCompletaOriginal, tipoCoral] = dataCompletaComCoral.split(' ('); // Divide entre a data e o tipo de coral
+    const dataCompleta = dataCompletaOriginal.trim(); // Data formatada (dd-mm-yyyy)
+    const tipoCoralFinal = tipoCoral ? tipoCoral.replace(')', '').trim() : ''; // Remove o parêntese final do tipo de coral
+    console.log(`Data completa original: ${dataCompleta}, Tipo de coral final: ${tipoCoralFinal}`);
+
+    // Converter a data de dd-mm-yyyy para o formato yyyy-mm-dd (para salvar no servidor)
+    const [dia, mes, ano] = dataCompleta.split('-');
+    const dataISO = `${ano}-${mes}-${dia}`;
+    console.log(`Data no formato ISO para salvar: ${dataISO}`);
+
+    // Capturar a hora de início e fim
+    const horaInicio = $('#horaInicio').val();
+    const horaFim = $('#horaFim').val();
+    console.log(`Horas capturadas: Início - ${horaInicio}, Fim - ${horaFim}`);
+
+    if (!horaInicio || !horaFim) {
+      console.log("Horas de início ou fim não preenchidas.");
+      alert('Por favor, preencha os horários de início e fim.');
+      return;
+    }
+
+    // Obter as linhas da tabela de presença
+    const linhasCoristas = $('#studentList tr');
+    console.log(`Número de linhas de coristas na tabela: ${linhasCoristas.length}`);
+
+    if (linhasCoristas.length === 0) {
+      console.error("Erro: Não há alunos listados no modal.");
+      alert("Erro: Não há alunos listados.");
+      return;
+    }
+
+    // Criar um array para armazenar os dados dos alunos
+    let dadosAlunos = [];
+    console.log("Iniciando captura dos dados dos alunos.");
+
+    // Iterar sobre cada linha e capturar os valores
+    let erroPresenca = false;
+    linhasCoristas.each(function(index, linha) {
+      const nome = $(linha).find('.nomeCell').text();
+      const presenca = $(linha).find('.presencaDropdown select').val();
+      const status = $(linha).find('.statusCell').text();
+      console.log(`Aluno: ${nome}, Presença: ${presenca}, Status: ${status}`);
+
+      // Verificar se o campo de presença foi preenchido
+      if (!presenca && status !== 'Desistente') {
+        console.log(`Presença não preenchida para o aluno ${nome}.`);
+        alert(`Por favor, preencha o status de presença para ${nome}.`);
+        erroPresenca = true;
+        return false; // Sai do loop
+      }
+
+      // Criar um objeto com os dados do aluno
+      let alunoDados = {
+        nome: nome,
+        presenca: presenca,
+        status: status,
+        horaInicio: horaInicio,
+        horaFim: horaFim,
+        dataCompleta: dataISO,
+        tipoCoral: tipoCoralFinal
+      };
+      console.log(`Dados capturados para o aluno ${nome}:`, alunoDados);
+
+      // Adicionar os dados do aluno ao array
+      dadosAlunos.push(alunoDados);
+    });
+
+    if (erroPresenca) {
+      console.log("Erro na captura dos dados de presença. Processo interrompido.");
+      return;
+    }
+
+    if (dadosAlunos.length === 0) {
+      console.log("Nenhum dado válido encontrado para salvar.");
+      alert("Erro: Nenhum dado válido foi encontrado para salvar.");
+      return;
+    }
+
+    // Confirmação antes de salvar
+    if (!confirm('Deseja realmente salvar os dados de presença?')) {
+      console.log("Usuário cancelou o salvamento.");
+      return;
+    }
+
+    // Exibir spinner de carregamento
+    console.log("Exibindo spinner de carregamento para salvar dados.");
+    $('#loadingSpinner').show();
+
+    // Enviar os dados para o servidor
+    google.script.run.withSuccessHandler(function(response){
+      console.log('Resposta do servidor após salvar:', response);
+      alert('Dados de presença salvos com sucesso!');
+      fecharModal(); // Fechar o modal após o salvamento bem-sucedido
+      console.log("Modal fechado após salvamento.");
+      $('#loadingSpinner').hide(); // Ocultar spinner
+    }).withFailureHandler(function(error){
+      console.error('Erro ao salvar os dados no servidor:', error);
+      alert('Erro ao salvar os dados. Tente novamente.');
+      $('#loadingSpinner').hide(); // Ocultar spinner em caso de erro
+      console.log("Spinner ocultado após erro no salvamento.");
+    }).salvarPresencaServidor(dadosAlunos);
+  } catch (error) {
+    console.error("Erro na função 'salvarPresenca':", error);
+  }
+}
+
+/**
+ * Função para fechar o modal e limpar os campos
+ */
+function fecharModal() {
+  console.log("Fechando modal de presença.");
+  try {
+    const modal = $('#modalPresenca');
+    modal.hide();
+
+    // Limpar os campos do modal
+    modal.find('input[type="text"], input[type="time"]').val('');
+    modal.find('select').prop('selectedIndex', 0);
+    modal.find('input[type="checkbox"], input[type="radio"]').prop('checked', false);
+    modal.find('textarea').val('');
+    modal.find('tr.desistente').removeClass('desistente').css('border', '');
+    console.log("Campos do modal de presença limpos.");
+  } catch (error) {
+    console.error("Erro na função 'fecharModal':", error);
+  }
+}
+
+  </script>
+</body>
+</html>

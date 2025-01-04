@@ -1,0 +1,431 @@
+<style>
+    /* Variáveis CSS para facilitar mudanças futuras */
+    :root {
+        --cor-primaria: #4CAF50;
+        --cor-secundaria: #FF6384;
+        --cor-fundo: #f1f1f1;
+        --cor-texto: #333;
+        --cor-texto-secundario: #555;
+        --cor-botao: var(--cor-primaria);
+        --cor-botao-hover: #45a049;
+        --cor-checkbox: var(--cor-primaria);
+        --cor-checkbox-checked: var(--cor-primaria);
+    }
+
+    /* Reset básico */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    /* Contêiner principal com layout flexível */
+    .dashboard-container {
+        display: flex;
+        min-height: 100vh;
+    }
+
+.pesquisaSatisfacao-header {
+    background-color: #ffffff;
+    color: rgb(186, 15, 228);
+    padding: 15px 20px;
+    text-align: center;
+    width: 100%;
+    box-sizing: border-box;
+    border-bottom: 2px solid #b44fea;
+}
+
+
+     .header h2 {
+        margin: 0 0 10px 0;
+        font-size: 24px;
+        color: var(--cor-texto);
+        // background-color: #d0e7ff; /* Background azul claro */
+        padding: 10px;
+        border-radius: 8px;
+    }
+
+    .header h3, .header h4 {
+        margin: 5px 0;
+        font-size: 18px;
+        color: var(--cor-texto-secundario);
+    } 
+
+    .input-group {
+        margin: 10px 0;
+    }
+
+    .input-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: 500;
+        color: var(--cor-texto);
+    }
+
+    .input-group textarea {
+        width: 200%;
+        margin-bottom: 30px;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+        justify-content: center; /* Centraliza os botões horizontalmente */
+    }
+
+
+    .input-group select, 
+    .input-group input[type="text"], 
+    .input-group input[type="date"], 
+    .input-group textarea {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+        justify-content: center; /* Centraliza os botões horizontalmente */
+    }
+
+    /* Formulário na Sidebar */
+    .form-container {
+        background-color: #ffffff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    } 
+
+    .form-container .card {
+        background-color: #f9f9f9;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        margin-bottom: 15px;
+    }
+
+    .form-container .card h3 {
+        font-size: 18px;
+        margin-bottom: 10px;
+        color: var(--cor-texto);
+    }
+
+    .form-container .card p {
+        font-size: 14px;
+        margin-bottom: 10px;
+        color: #666;
+    } 
+
+
+  .rating-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+        justify-content: center; /* Centraliza os botões horizontalmente */
+    }
+
+
+    .rating-buttons button {
+        width: 30px;
+        height: 30px;
+        border: none;
+        border-radius: 4px;
+        background-color: #e0e0e0;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .rating-buttons button:hover {
+        background-color: #d5d5d5;
+    } 
+
+    /* Main Content (graficos) */
+    .mainContent.dashboard-graficos {
+        flex-grow: 1; /* Permite que a div ocupe todo o espaço disponível */
+        padding: 20px;
+        overflow-y: auto;
+    }
+
+    /* Estilos para organizar os gráficos em Grid */
+    .dashboard-graficos .card-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        grid-gap: 20px;
+        padding: 20px 0;
+    }
+
+    .dashboard-graficos .card {
+        background-color: #f9f9f9;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        height: 300px;
+    }
+
+    .dashboard-graficos canvas {
+        width: 100%;
+        height: 250px;
+    }
+
+    /* Responsividade */
+    @media (min-width: 1200px) {
+        .dashboard-graficos .card-container {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media (min-width: 768px) and (max-width: 1199px) {
+        .dashboard-graficos .card-container {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        
+        .dashboard-graficos .card:nth-child(5) {
+            width: 60%;
+        }
+    }
+
+    @media (max-width: 767px) {
+        .dashboard-graficos .card-container {
+            grid-template-columns: 1fr;
+        }
+        
+        .dashboard-graficos .card:nth-child(5) {
+            grid-column: 1 / 2;
+            width: 100%;
+        }
+        
+        .dashboard-graficos .card {
+            height: auto;
+        }
+        
+        .dashboard-graficos canvas {
+            height: 100px;
+        }
+    }
+
+    /* Ajustes de margens */
+    .dashboard-graficos .card {
+        margin-bottom: 10px;
+    }
+
+    @media (max-width: 767px) {
+        .dashboard-graficos .card {
+            margin-bottom: 7.5px;
+        }
+    }
+
+    /* Estilos para o indicador de carregamento */
+    .loading-indicator {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: rgba(255, 255, 255, 0.9);
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        text-align: center;
+        font-size: 1.2rem;
+        color: #333;
+        z-index: 1000;
+    }
+
+    /* Área de Notificações */
+    .notificacao {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 15px;
+        border-radius: 5px;
+        display: none;
+        z-index: 1001;
+        min-width: 200px;
+        text-align: center;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    .notificacao.sucesso {
+        background-color: #4CAF50;
+        color: white;
+    }
+
+    .notificacao.erro {
+        background-color: #f44336;
+        color: white;
+    }
+
+    /* Estilos Comuns para Botões Verdes */
+    .btn-verde {
+        background-color: #4CAF50;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .titulo-tabela-container h2 {
+        margin: 0 0 10px 0;
+        font-size: 24px;
+        color: var(--cor-texto);
+        background-color: #d0e7ff; /* Background azul claro */
+        padding: 10px;
+        border-radius: 8px;
+    }
+
+    /* Estilos para a Tabela */
+    #tabelaPesquisa {
+        margin-top: 20px;
+    }
+
+    #tabelaPesquisa thead th {
+        background-color: #4CAF50;
+        color: white;
+    }
+
+    #tabelaPesquisa tbody tr:nth-child(even) {
+        background-color: #f2f2f2;
+    }
+
+    #tabelaPesquisa tbody tr:hover {
+        background-color: #ddd;
+    }
+
+    /* Ajustes de Fonte e Tamanho */
+    #tabelaPesquisa, #tabelaPesquisa th, #tabelaPesquisa td {
+        font-family: 'Roboto', sans-serif;
+        font-size: 14px;
+        padding: 12px;
+        text-align: left;
+    }
+
+    /* Personalização dos Botões de Paginação */
+    .dataTables_wrapper .dataTables_paginate .paginate_button {
+        background-color: #4CAF50;
+        color: white !important;
+        border: none;
+        border-radius: 4px;
+        padding: 6px 12px;
+        margin: 2px;
+        cursor: pointer;
+    }
+
+    .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+        background-color: #45a049;
+    }
+
+    .dataTables_wrapper .dataTables_filter input {
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        padding: 6px;
+    }
+
+    .dataTables_wrapper .dataTables_length select {
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        padding: 6px;
+    }
+    .rating-buttons button.selected {
+    background-color: green;   /* Exemplo de cor de fundo */
+    color: #fff;               /* Cor do texto */
+    border: 1px solid #ccc;    /* Exemplo de borda */
+}
+
+
+    /* Modal Styling */
+    .modal-modal-content { max-width: 800px; }
+    .modal-header {
+      background-color: #4A90E2;
+      color: #fff;
+    }
+    .modal-title i {
+      margin-right: 5px;
+    }
+
+
+.button {
+    display: flex;
+    gap: 20px; /* Espaçamento entre os botões */
+    margin-top: 10px;
+}
+
+/* Status Colors */
+.Satisfacao1-0, .Satisfacao2-0, .Satisfacao4-0 { background-color: #007bff; }
+.Satisfacao1-1, .Satisfacao2-1, .Satisfacao4-1 { background-color: #007bff; }
+.Satisfacao1-2, .Satisfacao2-2, .Satisfacao4-2 { background-color: #17a2b8; }
+.Satisfacao1-3, .Satisfacao2-3, .Satisfacao4-3 { background-color: #ffc107; }
+.Satisfacao1-4, .Satisfacao2-4, .Satisfacao4-4 { background-color: #fd7e14; }
+.Satisfacao1-5, .Satisfacao2-5, .Satisfacao4-5 { background-color: #28a745; }
+.Satisfacao1-6, .Satisfacao2-6, .Satisfacao4-6 { background-color: #dc3545; }
+.Satisfacao1-7, .Satisfacao2-7, .Satisfacao4-7 { background-color: #93e5ed; }
+.Satisfacao1-8, .Satisfacao2-8, .Satisfacao4-8 { background-color: #9c35dc; }
+.Satisfacao1-9, .Satisfacao2-9, .Satisfacao4-9 { background-color: #d51ea7; }
+.Satisfacao1-10, .Satisfacao2-10, .Satisfacao4-10 { background-color: #71d9a3; }
+
+#modal-tabela-pesquisa {
+  display: block;
+  max-height: 100vh; 
+  overflow-y: auto;
+}
+
+#table-pesquisa {
+  width: 100%;
+}
+
+/* Modal Styles */
+.modal {
+  display: none; /* Mantém o modal escondido por padrão */
+  position: fixed; /* Fixa o modal na tela */
+  z-index: 1000; /* Garante que o modal fique acima de outros elementos */
+  left: 0;
+  top: 0;
+  width: 100%; /* Largura total */
+  height: 100%; /* Altura total */
+  overflow: hidden; /* Impede a rolagem do background */
+  background-color: rgba(0, 0, 0, 0.5); /* Fundo semi-transparente */
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 5% auto; /* Centraliza vertical e horizontalmente */
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%; /* Aumenta a largura para acomodar 8 colunas */
+  max-height: 90vh; /* Altura máxima com altura de viewport */
+  overflow-y: auto; /* Permite rolagem interna do modal */
+  border-radius: 8px; /* Bordas arredondadas */
+  position: relative;
+  animation: fadeIn 0.5s; /* Efeito de fade-in */
+}
+
+/* Efeito de fade-in para o modal */
+@keyframes fadeIn {
+  from {opacity: 0;}
+  to {opacity: 1;}
+}
+
+/* Estilo para o botão fechar com efeito de transição */
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  transition: color 0.3s;
+}
+
+.close:hover,
+.close:focus {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* Ajuste da tabela para 8 colunas */
+#table-pesquisa {
+  width: 100%;
+  table-layout: fixed; /* Layout fixo para colunas uniformes */
+}
+
+
+</style>

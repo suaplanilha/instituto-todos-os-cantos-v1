@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Aniversariantes</title>
+    <!-- Inclua o CSS necessário aqui -->
+    <!-- Importar CSS do DataTables -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+    <!-- Importar jsPDF e jsPDF-AutoTable -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    <!-- Importar jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Importar DataTables -->
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+</head>
+<style>
+
+.aniversariantes-container .header {
+    margin: 20px;
+    background-color: #ffffff;
+    color: rgb(186, 15, 228);
+    padding: 15px 20px;
+    text-align: center;
+    width: 100%;
+    box-sizing: border-box;
+    border-bottom: 2px solid #b44fea;
+}
+
+
+    </style>
+<body>
+
+    <div class="aniversariantes-container">
+        <div class="header">
+            <h1 id="ano-atual"></h1>
+        </div>
+
+        <div class="layout-container">
+            <!-- Menu Lateral dos Meses -->
+            <div class="menu-meses" id="menu-meses">
+                <!-- Botões dos meses serão inseridos aqui dinamicamente -->
+            </div>
+
+            <!-- Conteúdo Principal -->
+            <div class="main-content">
+                <!-- Tabela de Aniversariantes -->
+                <table id="tabelaAniversariantes" class="display">
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>Data de Nascimento</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Dados dos aniversariantes serão inseridos aqui -->
+                    </tbody>
+                </table>
+
+                <!-- Botão para gerar PDF -->
+                <button id="btn-export-pdf" class="btn btn-export-pdf" style="width: 100px;">Gerar PDF</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mensagem de Feedback -->
+    <div id="mensagem-feedback" class="mensagem"></div>
+
+    <!-- Script Principal -->
+    <script>
+        // Importação da versão UMD do jsPDF
+        const { jsPDF } = window.jspdf;
+
+        // Função para exibir mensagens de feedback
+        function exibirMensagem(mensagem, tipo) {
+            const mensagemDiv = document.getElementById('mensagem-feedback');
+            mensagemDiv.textContent = mensagem;
+            mensagemDiv.className = `mensagem ${tipo}`;
+            mensagemDiv.style.display = 'block';
+
+            // Ocultar a mensagem após 5 segundos
+            setTimeout(() => {
+                mensagemDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        // Função para obter o ano atual
+        const anoAtual = new Date().getFullYear();
+        document.getElementById('ano-atual').textContent = `Aniversariantes - Ano: ${anoAtual}`;
+        console.log(`Ano atual definido: ${anoAtual}`);
+
+        // Lista dos meses abreviados em português
+        const meses = [
+            "Jan", "Fev", "Mar", "Abr", "Mai", "Jun",
+            "Jul", "Ago", "Set", "Out", "Nov", "Dez"
+        ];
+
+        const menuMeses = document.getElementById('menu-meses');
+        const tabelaAniversariantes = $('#tabelaAniversariantes').DataTable({
+           responsive: true,
+            paging: true,
+            searching: true,
+            ordering: true,
+            info: true,
+            language: {
+                "sEmptyTable": "Nenhum registro encontrado",
+                "sInfo": "Mostrando de _START_ até _END_ de _TOTAL_ registros",
+                "sInfoEmpty": "Mostrando 0 até 0 de 0 registros",
+                "sInfoFiltered": "(Filtrados de _MAX_ registros)",
+                "sLengthMenu": "_MENU_ resultados por página",
+                "sLoadingRecords": "Carregando...",
+                "sProcessing": "Processando...",
+                "sZeroRecords": "Nenhum registro encontrado",
+                "sSearch": "Pesquisar",
+                "oPaginate": {
+                "sNext": "Próximo",
+                "sPrevious": "Anterior",
+                "sFirst": "Primeiro",
+                "sLast": "Último"
+                },
+                "oAria": {
+                "sSortAscending": ": Ordenar colunas de forma ascendente",
+                "sSortDescending": ": Ordenar colunas de forma descendente"
+                }
+            }
+            });
+
+        // Função para criar o menu de meses
+        meses.forEach((mes, index) => {
+            // Criar botão do mês
+            const button = document.createElement('button');
+            button.classList.add('mes-button');
+            button.textContent = mes;
+            button.onclick = () => carregarAniversariantes(index);
+            if(index === new Date().getMonth()) {
+                button.classList.add('active');
+            }
+            menuMeses.appendChild(button);
+            console.log(`Botão criado para o mês: ${mes}`);
+        });
+
+        // Função para carregar os aniversariantes do mês selecionado
+        function carregarAniversariantes(mesIndex) {
+            console.log(`Carregando aniversariantes para o mês: ${meses[mesIndex]}`);
+            // Remover a classe 'active' de todos os botões
+            const buttons = menuMeses.getElementsByClassName('mes-button');
+            for(let i = 0; i < buttons.length; i++) {
+                buttons[i].classList.remove('active');
+            }
+            // Adicionar a classe 'active' ao botão selecionado
+            buttons[mesIndex].classList.add('active');
+
+            // Limpar a tabela
+            tabelaAniversariantes.clear().draw();
+
+            // Exibir mensagem de carregamento
+            exibirMensagem('Carregando aniversariantes...', 'info');
+
+            // Chamar a função do servidor para obter os aniversariantes
+            google.script.run.withSuccessHandler(function(aniversariantes) {
+                // Ocultar mensagem de carregamento
+                exibirMensagem('', 'info');
+
+                // Verificar se há aniversariantes
+                if (aniversariantes.length === 0) {
+                    exibirMensagem('Nenhum aniversariante encontrado para este mês.', 'info');
+                    return;
+                }
+
+                // Preencher a tabela com os aniversariantes
+                aniversariantes.forEach(aniversariante => {
+                    tabelaAniversariantes.row.add([
+                        aniversariante.nome,
+                        aniversariante.dataNascimento
+                    ]).draw(false);
+                });
+            }).withFailureHandler(function(error) {
+                exibirMensagem('Erro ao carregar os aniversariantes.', 'erro');
+                console.error('Erro ao carregar aniversariantes:', error);
+            }).obterAniversariantesPorMes(mesIndex + 1); // Meses no JavaScript são de 0 a 11, então somamos 1
+        }
+
+        // Carregar os aniversariantes do mês atual ao carregar a página
+        carregarAniversariantes(new Date().getMonth());
+
+        // Função para gerar o PDF dos aniversariantes
+        function gerarPDF() {
+            try {
+                const doc = new jsPDF();
+
+                // Adicionar título
+                doc.setFontSize(16);
+                doc.text('Lista de Aniversariantes', 105, 20, null, null, 'center');
+
+                // Adicionar subtítulo com o mês selecionado
+                const mesSelecionado = document.querySelector('.mes-button.active').textContent;
+                doc.setFontSize(12);
+                doc.text(`Mês: ${mesSelecionado}`, 105, 30, null, null, 'center');
+
+                // Obter os dados da tabela
+                const data = [];
+                tabelaAniversariantes.rows().every(function() {
+                    const rowData = this.data();
+                    data.push([rowData[0], rowData[1]]);
+                });
+
+                if (data.length === 0) {
+                    exibirMensagem('Nenhum aniversariante para gerar o PDF.', 'info');
+                    return;
+                }
+
+                // Adicionar tabela ao PDF
+                doc.autoTable({
+                    head: [['Nome', 'Data de Nascimento']],
+                    body: data,
+                    startY: 40,
+                    theme: 'grid',
+                });
+
+                // Salvar o PDF
+                doc.save('aniversariantes.pdf');
+                exibirMensagem('PDF gerado com sucesso!', 'sucesso');
+            } catch (error) {
+                console.error('Erro ao gerar PDF:', error);
+                exibirMensagem('Erro ao gerar o PDF.', 'erro');
+            }
+        }
+
+        // Adicionar evento ao botão de gerar PDF
+        document.getElementById('btn-export-pdf').addEventListener('click', gerarPDF);
+
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <!-- Incluindo a fonte Roboto -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- css/relatorios -->
+    
+</head>
+<body>
+    <div class="dashboard-filtros">
+        <header>
+            <h1>Dashboard</h1>
+        </header>
+
+        <div class="content-wrapper">
+            <!-- Área de Filtros -->
+            <div id="menuFiltros">
+                <h2>Filtros:</h2>
+                <label for="filtroAtivo"><input type="checkbox" id="filtroAtivo" checked> Ativo</label>
+                <label for="filtroDesistente"><input type="checkbox" id="filtroDesistente" checked> Desistente</label>
+                <label for="filtroCoralUnimed"><input type="checkbox" id="filtroCoralUnimed" checked> CoralUnimed</label>
+                <label for="filtroAlgazarra"><input type="checkbox" id="filtroAlgazarra" checked> AlgazarraCoral</label>
+
+                <label for="filtroCestaBasicaVerde"><input type="checkbox" id="filtroCestaBasicaVerde"> Cesta Básica Verde</label>
+                <label for="filtroCestaVerde"><input type="checkbox" id="filtroCestaVerde"> Cesta Verde</label>
+                <label for="filtroCestaBasica"><input type="checkbox" id="filtroCestaBasica"> Cesta Básica</label>
+
+                <button id="filtroTodos">Desmarcar Todos</button>
+                <button id="exportarPDF">Exportar em PDF</button>
+            </div>
+
+            <!-- Conteúdo Principal com Gráficos -->
+            <div class="mainContent dashboard-graficos">
+                <div class="card-container">
+                    <!-- Gráfico de Distribuição por Status -->
+                    <div class="card">
+                        <h3>Distribuição por Status</h3>
+                        <canvas id="graficoStatus"></canvas>
+                    </div>
+
+                    <!-- Gráfico de Benefícios -->
+                    <div class="card">
+                        <h3>Benefícios</h3>
+                        <canvas id="graficoBeneficios"></canvas>
+                    </div>
+                </div>
+                
+                <!-- Segunda Linha de Gráficos -->
+                <div class="card-container">
+                    <!-- Gráfico de Tipo de Coral -->
+                    <div class="card">
+                        <h3>Distribuição por Tipo de Coral</h3>
+                        <canvas id="graficoTipoCoral"></canvas>
+                    </div>
+
+                    <!-- Gráfico de Gênero -->
+                    <div class="card">
+                        <h3>Distribuição de Gênero</h3>
+                        <canvas id="graficoGenero"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Indicador de Carregamento -->
+    <div id="loading-indicator" class="loading-indicator">
+        <p>Carregando...</p>
+    </div>
+
+    <!-- Área de Notificações -->
+    <div id="notificacao" class="notificacao"></div>
+
+    <!-- Incluindo jQuery e Chart.js -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Certifique-se de que o Chart.js é carregado apenas uma vez -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+    <!-- Incluindo jsPDF e html2canvas -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script>
+        // Registrar o plugin ChartDataLabels
+        Chart.register(ChartDataLabels);
+
+        $(document).ready(function() {
+            // ==================== INÍCIO DO DOM READY ====================
+
+            let dadosCache = null;
+            let chartGenero = null;
+            let chartBeneficios = null;
+            let chartTipoCoral = null;
+            let chartStatus = null;
+
+            // Função para mostrar o indicador de carregamento
+            function mostrarCarregamento() {
+                $('#loading-indicator').show();
+            }
+
+            // Função para esconder o indicador de carregamento
+            function esconderCarregamento() {
+                $('#loading-indicator').hide();
+            }
+
+            // Função para mostrar notificações
+            function mostrarNotificacao(mensagem, tipo) {
+                const notificacao = $('#notificacao');
+                notificacao.removeClass('sucesso erro').addClass(tipo).text(mensagem).fadeIn();
+
+                setTimeout(() => {
+                    notificacao.fadeOut();
+                }, 3000);
+            }
+
+            // Função para obter o título dinâmico com base nos filtros
+            function obterTituloDinamico(tituloOriginal) {
+                const filtroCoralUnimed = $('#filtroCoralUnimed').is(':checked');
+                const filtroAlgazarra = $('#filtroAlgazarra').is(':checked');
+                let tituloDinamico = tituloOriginal;
+
+                if (filtroCoralUnimed && !filtroAlgazarra) {
+                    tituloDinamico = 'Coral Unimed';
+                } else if (filtroAlgazarra && !filtroCoralUnimed) {
+                    tituloDinamico = 'Algazarra Coral';
+                } else if (filtroCoralUnimed && filtroAlgazarra) {
+                    tituloDinamico = 'Algazarra Coral / Coral Unimed';
+                }
+
+                return tituloDinamico;
+            }
+
+            // Função para obter os dados do servidor (Google Apps Script)
+            function obterDadosDoServidor() {
+                return new Promise((resolve, reject) => {
+                    console.log("Obtendo dados do servidor...");
+                    google.script.run
+                        .withSuccessHandler(function(dados) {
+                            dadosCache = dados; // Armazena os dados recebidos do GAS no cache
+                            resolve(dados);
+                            mostrarNotificacao('Dados carregados com sucesso!', 'sucesso');
+                        })
+                        .withFailureHandler(function(error) {
+                            console.error("Erro ao obter dados:", error);
+                            mostrarNotificacao('Erro ao carregar os dados do servidor.', 'erro');
+                            reject(error);
+                        })
+                        .obterDadosCoristas(); // Chama a função no GAS
+                });
+            }
+
+            // Função para aplicar filtros e atualizar os gráficos
+            function aplicarFiltros() {
+                if (!dadosCache) return; // Se não houver dados no cache, sair
+
+                mostrarCarregamento();
+
+                const filtroAtivo = $('#filtroAtivo').is(':checked');
+                const filtroDesistente = $('#filtroDesistente').is(':checked');
+
+                const filtroCoralUnimed = $('#filtroCoralUnimed').is(':checked');
+                const filtroAlgazarra = $('#filtroAlgazarra').is(':checked');
+                const filtroCestaBasicaVerde = $('#filtroCestaBasicaVerde').is(':checked');
+                const filtroCestaVerde = $('#filtroCestaVerde').is(':checked');
+                const filtroCestaBasica = $('#filtroCestaBasica').is(':checked');
+
+                const dadosFiltrados = dadosCache.filter(item => {
+                    const status = item.status ? item.status.toLowerCase().trim() : ''; // Tratar valores indefinidos
+                    const statusMatch = (filtroAtivo && status === 'ativo') || 
+                                        (filtroDesistente && status === 'desistente');
+
+                    const tipoCoral = item.tipoCoral ? item.tipoCoral.toLowerCase().trim() : '';
+                    const coralMatch = (filtroCoralUnimed && tipoCoral === 'coralunimed') || 
+                                       (filtroAlgazarra && tipoCoral === 'algazarracoral') || 
+                                       (!filtroCoralUnimed && !filtroAlgazarra);
+
+                    const beneficioNormalizado = item.beneficio ? item.beneficio.trim().toLowerCase() : '';
+                    const beneficioMatch = (filtroCestaBasicaVerde && beneficioNormalizado === 'cestabasicaverde') ||
+                                           (filtroCestaVerde && beneficioNormalizado === 'cestaverde') ||
+                                           (filtroCestaBasica && beneficioNormalizado === 'cestabasica') || 
+                                           (!filtroCestaBasicaVerde && !filtroCestaVerde && !filtroCestaBasica);
+
+                    return statusMatch && coralMatch && beneficioMatch;
+                });
+
+                console.log("Dados filtrados:", dadosFiltrados);
+                atualizarGraficoGenero(dadosFiltrados);
+                atualizarGraficoBeneficios(dadosFiltrados);
+                atualizarGraficoTipoCoral(dadosFiltrados);
+                atualizarGraficoStatus(dadosFiltrados);
+
+                esconderCarregamento();
+            }
+
+            // Função para atualizar o gráfico de Status
+            function atualizarGraficoStatus(dadosFiltrados) {
+                const ativos = dadosFiltrados.filter(d => d.status && d.status.toLowerCase().trim() === 'ativo').length;
+                const desistentes = dadosFiltrados.filter(d => d.status && d.status.toLowerCase().trim() === 'desistente').length;
+
+                const dadosStatus = [ativos, desistentes];
+
+                if (chartStatus) {
+                    chartStatus.destroy(); // Destroi o gráfico anterior antes de criar um novo
+                }
+
+                const ctx = document.getElementById('graficoStatus').getContext('2d');
+
+                // Obter o título dinâmico
+                const tituloDinamico = obterTituloDinamico('Distribuição por Status');
+
+                chartStatus = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Ativo', 'Desistente'],
+                        datasets: [{
+                            label: 'Status',
+                            data: dadosStatus,
+                            backgroundColor: ['#36A2EB', '#FF6384']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            title: {
+                                display: true,
+                                //text: tituloDinamico, // Título dinâmico
+                                padding: {
+                                    top: 10,
+                                    bottom: 30
+                                }
+                            },
+                            legend: {
+                                display: false,
+                            },
+                            tooltip: {
+                                enabled: true
+                            },
+                            datalabels: {
+                                display: true,
+                                align: 'end',
+                                anchor: 'end',
+                                formatter: (value) => value,
+                                font: {
+                                    weight: 'bold'
+                                },
+                                color: '#000'
+                            }
+                        },
+                        scales: {
+                            x: {
+                                display: true
+                            },
+                            y: {
+                                display: false, // Remove as lindas do eixo Y
+                                beginAtZero: true
+                            }
+                        },
+                        layout: {
+                            padding: {
+                                top: 10
+                            }
+                        }
+                    },
+                    plugins: [ChartDataLabels]
+                });
+            }
+
+            // Função para atualizar o gráfico de Benefícios
+            function atualizarGraficoBeneficios(dadosFiltrados) {
+                // Contagem de benefícios
+                const cestaBasica = dadosFiltrados.filter(d => d.beneficio && typeof d.beneficio === 'string' && d.beneficio.toLowerCase().trim() === 'cestabasica').length;
+                const cestaBasicaVerde = dadosFiltrados.filter(d => d.beneficio && typeof d.beneficio === 'string' && d.beneficio.toLowerCase().trim() === 'cestabasicaverde').length;
+                const cestaVerde = dadosFiltrados.filter(d => d.beneficio && typeof d.beneficio === 'string' && d.beneficio.toLowerCase().trim() === 'cestaverde').length;
+
+                const dadosBeneficios = [cestaBasica, cestaBasicaVerde, cestaVerde];
+
+                if (chartBeneficios) {
+                    chartBeneficios.destroy(); // Destroi o gráfico anterior antes de criar um novo
+                }
+
+                const ctx = document.getElementById('graficoBeneficios').getContext('2d');
+
+                // Obter o título dinâmico
+                const tituloDinamico = obterTituloDinamico('Distribuição de Benefícios');
+
+                chartBeneficios = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Cesta Básica', 'Cesta Básica Verde', 'Cesta Verde'],
+                        datasets: [{
+                            label: 'Benefícios',
+                            data: dadosBeneficios,
+                            backgroundColor: ['#FFCE56', '#4BC0C0', '#FF6384']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            title: {
+                                display: true,
+                                //text: tituloDinamico, // Título dinâmico
+                                padding: {
+                                    top: 10,
+                                    bottom: 30
+                                }
+                            },
+                            legend: {
+                                display: false,
+                            },
+                            tooltip: {
+                                enabled: true
+                            },
+                            datalabels: {
+                                display: true,
+                                align: 'end',
+                                anchor: 'end',
+                                formatter: (value) => value,
+                                font: {
+                                    weight: 'bold'
+                                },
+                                color: '#000'
+                            }
+                        },
+                        scales: {
+                            x: {
+                                display: true
+                            },
+                            y: {
+                                display: false, // Remove as lindas do eixo Y
+                                beginAtZero: true
+                            }
+                        },
+                        layout: {
+                            padding: {
+                                top: 10
+                            }
+                        }
+                    },
+                    plugins: [ChartDataLabels]
+                });
+            }
+
+            // Função para atualizar o gráfico de Tipo de Coral
+            function atualizarGraficoTipoCoral(dadosFiltrados) {
+                // Contagem por Tipo de Coral
+                const coralUnimed = dadosFiltrados.filter(d => 
+                    d.tipoCoral && typeof d.tipoCoral === 'string' && d.tipoCoral.toLowerCase().trim() === 'coralunimed'
+                ).length;
+                
+                const algazarraCoral = dadosFiltrados.filter(d => 
+                    d.tipoCoral && typeof d.tipoCoral === 'string' && d.tipoCoral.toLowerCase().trim() === 'algazarracoral'
+                ).length;
+
+                const dadosTipoCoral = [coralUnimed, algazarraCoral];
+
+                if (chartTipoCoral) {
+                    chartTipoCoral.destroy(); // Destroi o gráfico anterior antes de criar um novo
+                }
+
+                const ctx = document.getElementById('graficoTipoCoral').getContext('2d');
+
+                // Obter o título dinâmico
+                const tituloDinamico = obterTituloDinamico('Distribuição por Tipo de Coral');
+
+                chartTipoCoral = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Coral Unimed', 'Algazarra Coral'],
+                        datasets: [{
+                            label: 'Tipo de Coral',
+                            data: dadosTipoCoral,
+                            backgroundColor: ['#36A2EB', '#FF6384']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            title: {
+                                display: true,
+                                //text: tituloDinamico, // Título dinâmico
+                                padding: {
+                                    top: 10,
+                                    bottom: 30
+                                }
+                            },
+                            legend: {
+                                display: false,
+                            },
+                            tooltip: {
+                                enabled: true
+                            },
+                            datalabels: {
+                                display: true,
+                                align: 'end',
+                                anchor: 'end',
+                                formatter: (value) => value,
+                                font: {
+                                    weight: 'bold'
+                                },
+                                color: '#000'
+                            }
+                        },
+                        scales: {
+                            x: {
+                                display: true
+                            },
+                            y: {
+                                display: false, // Remove as lindas do eixo Y
+                                beginAtZero: true
+                            }
+                        },
+                        layout: {
+                            padding: {
+                                top: 10
+                            }
+                        }
+                    },
+                    plugins: [ChartDataLabels]
+                });
+            }
+
+            // Função para atualizar o gráfico de Gênero
+            function atualizarGraficoGenero(dadosFiltrados) {
+                const masculino = dadosFiltrados.filter(d => d.genero && typeof d.genero === 'string' && d.genero.toLowerCase().trim() === 'masculino').length;
+                const feminino = dadosFiltrados.filter(d => d.genero && typeof d.genero === 'string' && d.genero.toLowerCase().trim() === 'feminino').length;
+
+                const dadosGrafico = [masculino, feminino];
+
+                if (chartGenero) {
+                    chartGenero.destroy(); // Destroi o gráfico anterior antes de criar um novo
+                }
+
+                const ctx = document.getElementById('graficoGenero').getContext('2d');
+
+                // Obter o título dinâmico
+                const tituloDinamico = obterTituloDinamico('Distribuição por Gênero');
+
+                chartGenero = new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: ['Masculino', 'Feminino'],
+                        datasets: [{
+                            data: dadosGrafico,
+                            backgroundColor: ['#36A2EB', '#FF6384'],
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            title: {
+                                display: true,
+                                //text: tituloDinamico, // Título dinâmico
+                            },
+                            legend: {
+                                position: 'bottom'
+                            },
+                            datalabels: {
+                                formatter: (value) => value,
+                                color: '#fff',
+                                font: {
+                                    weight: 'bold'
+                                }
+                            }
+                        }
+                    },
+                    plugins: [ChartDataLabels]
+                });
+            }
+
+            // Função para alternar entre marcar e desmarcar todos os filtros
+            function alternarFiltros() {
+                const todosMarcadosAtualmente = $('#menuFiltros input[type="checkbox"]').length === $('#menuFiltros input[type="checkbox"]:checked').length;
+                $('#menuFiltros input[type="checkbox"]').prop('checked', !todosMarcadosAtualmente);
+                $('#filtroTodos').text(!todosMarcadosAtualmente ? 'Desmarcar Todos' : 'Marcar Todos');
+                aplicarFiltros();
+            }
+
+            // Função para exportar os gráficos em PDF
+            function exportarPDF() {
+                mostrarCarregamento();
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF({
+                    orientation: 'portrait',
+                    unit: 'mm',
+                    format: 'a4'  // Formato da página A4
+                });
+
+                const pageWidth = doc.internal.pageSize.getWidth();
+                const marginTop = 20;
+                const marginLeft = 25;
+                const headerHeight = 30;
+
+                // Configurações de cabeçalho e rodapé
+                const col1Width = 50;
+                const col2Width = 80;
+                const col3Width = 40;
+
+                const col1X = marginLeft;
+                const col2X = marginLeft + col1Width;
+                const col3X = marginLeft + col1Width + col2Width;
+
+                // Obter o subtítulo dinâmico
+                const subtitulo = obterTituloDinamico('Relatório de Dashboard'); // Ajuste conforme necessário
+
+                // Desenhar cabeçalho
+                doc.setLineWidth(0.1);
+                doc.rect(col1X, marginTop, col1Width, headerHeight);
+                doc.rect(col2X, marginTop, col2Width, headerHeight);
+                doc.rect(col3X, marginTop, col3Width, headerHeight);
+
+                // Adicionar imagens no cabeçalho
+                // Note que html2canvas pode não conseguir capturar imagens de domínios diferentes devido a políticas de CORS.
+                // Se as imagens não aparecerem corretamente, considere hospedá-las no mesmo domínio ou usar base64.
+                // Para este exemplo, vamos usar imagens base64 ou URLs que permitam acesso.
+
+                // Adicionar logo da esquerda
+                doc.addImage("https://i.ibb.co/Y768JNk/algazarra.jpg", "JPEG", col1X + (col1Width - 30) / 2, marginTop + 5, 30, 20);
+
+                // Adicionar textos centralizados na segunda coluna
+                doc.setFontSize(10);
+                doc.setFont("helvetica", "normal");
+                doc.text("CNPJ 11.510.597/0001-30", col2X + col2Width / 2, marginTop + 10, { align: 'center' });
+                doc.text("Praça Costa Pereira, 52, Ed. Michellini - sala 1104,", col2X + col2Width / 2, marginTop + 15, { align: 'center' });
+                doc.text("Centro, Vitória - ES, CEP 29010-080", col2X + col2Width / 2, marginTop + 20, { align: 'center' });
+
+                // Adicionar logo da direita
+                doc.addImage("https://i.ibb.co/6w8N1kp/instituto-Todos-Cantos.jpg", "JPEG", col3X + (col3Width - 30) / 2, marginTop + 5, 30, 20);
+
+                // Nova linha para o título com subtítulo dinâmico
+                doc.rect(marginLeft, marginTop + headerHeight + 2, 170, 5);
+                doc.text(subtitulo, marginLeft + 85, marginTop + headerHeight + 6, { align: 'center' });
+
+                // Nova linha para informações adicionais
+                doc.rect(marginLeft, marginTop + headerHeight + 7, 170, 5);
+                doc.setFontSize(9);
+                doc.text("Gráficos de observação",
+                    marginLeft + 85, marginTop + headerHeight + 11, { align: 'center' });
+
+                // Inserir espaçamento duplo abaixo do cabeçalho
+                const doubleSpacing = 10; // Ajuste conforme necessário
+                let yPosition = marginTop + headerHeight + 15 + doubleSpacing;
+
+                // Definir dimensões dos gráficos
+                const chartWidth = (pageWidth - 2 * marginLeft - 20) / 2; // 20mm de gap entre gráficos
+                const chartHeight = 40; // Altura fixa para cada gráfico
+
+                // Função para adicionar uma imagem ao PDF
+                function adicionarImagem(canvasId, titulo, posX, posY, width, height) {
+                    return html2canvas(document.getElementById(canvasId)).then(canvas => {
+                        const imgData = canvas.toDataURL('image/png');
+                        doc.setFontSize(12);
+                        doc.text(titulo, posX + width / 2, posY - 5, { align: 'center' });
+                        doc.addImage(imgData, 'PNG', posX, posY, width, height);
+                    });
+                }
+
+                // Adicionar os gráficos na ordem especificada
+                Promise.all([
+                    // Linha 1, Coluna 1 - GraficoStatus
+                    adicionarImagem('graficoStatus', obterTituloDinamico('Distribuição por Status'), marginLeft, yPosition, chartWidth, chartHeight),
+                    // Linha 1, Coluna 2 - GraficoTipoCoral
+                    adicionarImagem('graficoTipoCoral', obterTituloDinamico('Distribuição por Tipo de Coral'), marginLeft + chartWidth + 20, yPosition, chartWidth, chartHeight)
+                ]).then(() => {
+                    // Inserir espaçamento duplo entre as linhas
+                    yPosition += chartHeight + 20; // 20mm de espaçamento
+
+                    return Promise.all([
+                        // Linha 2, Coluna 1 - GraficoBeneficios
+                        adicionarImagem('graficoBeneficios', obterTituloDinamico('Distribuição de Benefícios'), marginLeft, yPosition, chartWidth, chartHeight),
+                        // Linha 2, Coluna 2 - GraficoGenero
+                        adicionarImagem('graficoGenero', obterTituloDinamico('Distribuição por Gênero'), marginLeft + chartWidth + 20, yPosition, chartWidth, chartHeight)
+                    ]);
+                }).then(() => {
+                    // Salvar o PDF após adicionar todos os gráficos
+                    doc.save('dashboard.pdf');
+                    esconderCarregamento();
+                    mostrarNotificacao('PDF gerado com sucesso!', 'sucesso');
+                }).catch(error => {
+                    console.error('Erro ao gerar PDF:', error);
+                    mostrarNotificacao('Erro ao gerar o PDF.', 'erro');
+                    esconderCarregamento();
+                });
+            }
+
+            // Inicializa os dados e configura eventos para os filtros
+            obterDadosDoServidor().then(() => {
+                console.log("Dados carregados com sucesso");
+                aplicarFiltros(); // Aplicar os filtros padrão ao carregar
+            }).catch((error) => {
+                console.error("Erro ao carregar os dados do servidor:", error);
+            });
+
+            // Atualizar filtros ao alterar qualquer checkbox
+            $('#menuFiltros input[type="checkbox"]').change(function() {
+                console.log("Checkbox alterado:", $(this).attr('id'));
+                aplicarFiltros();
+            });
+
+            // Alternar marcar/desmarcar filtros ao clicar no botão
+            $('#filtroTodos').click(function() {
+                console.log("Botão de marcar/desmarcar todos clicado");
+                alternarFiltros();
+            });
+
+            // Exportar PDF ao clicar no botão
+            $('#exportarPDF').click(function() {
+                console.log("Botão de exportar PDF clicado");
+                exportarPDF();
+            });
+
+            // ==================== FIM DO DOM READY ====================
+        });
+    </script>
+</body>
+</html>

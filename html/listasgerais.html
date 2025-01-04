@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel de Operações</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    
+       <!-- > css/listasgerais* -->
+  
+</head>
+<body>
+
+    <!-- Painel de Filtros e Campos de Texto 
+    <div class="painel-container">
+        <h2>Painel de Filtros e Operações</h2>-->
+
+          <div class="painel-header">
+            <div class="header">
+            <h1> Painel de Filtros e Operações </h1>
+            </div>
+              </div>
+    
+
+        <!-- Filtro Cestas -->
+         <div class="painel-container">
+        <div class="form-group">
+            <label for="listaCestaVerde">Tipo de Cesta:</label>
+            <select id="listaCestaVerde" name="CestaVerde">
+                <option value="Cesta Básica">Cesta Básica</option>
+                <option value="Cesta Verde">Cesta Verde</option>
+                <option value="Cesta Básica + Verde">Cesta Básica + Verde</option>
+            </select>
+        </div>
+
+        <!-- Campo de Data -->
+        <div class="form-group">
+            <label for="dataEntrega">Data de Entrega:</label>
+            <input type="date" id="dataEntrega" name="dataEntrega">
+        </div>
+
+        <!-- Input Texto para Editar o Título -->
+        <div class="form-group">
+            <label for="tituloRecibo">Editar Título do Recibo:</label>
+            <input type="text" id="tituloRecibo" value="Recibo de Entrega das Cestas Verde, contrapartida do Projeto 'Algazarra Coral: formação vocal e responsabilidade social - ano 2024'">
+        </div>
+
+        <!-- Input Texto para Editar a Lei de Incentivo -->
+        <div class="form-group">
+            <label for="leiIncentivo">Editar Lei de Incentivo:</label>
+            <input type="text" id="leiIncentivo" value="Lei de Incentivo à Cultura Capixaba (LICC)">
+        </div>
+
+        <!-- Checkboxes Situação e Tipo Coral -->
+        <div class="checkbox-group-container">
+            <div class="checkbox-group">
+                <label>Situação:</label><br>
+                <input type="checkbox" id="ativo" name="situacao" checked>
+                <label for="ativo">Ativo</label>
+                <input type="checkbox" id="desistente" name="situacao">
+                <label for="desistente">Desistente</label>
+            </div>
+
+            <div class="checkbox-group">
+                <label>Tipo Coral:</label><br>
+                <input type="checkbox" id="coralAlgazarra" name="tipoCoral" checked>
+                <label for="coralAlgazarra">Coral Algazarra</label>
+            </div>
+        </div>
+
+        <!-- Botão para abrir o modal -->
+        <button class="btn open-modal-btn">Abrir Recibo</button>
+    </div>
+
+    <!-- O Modal -->
+    <div id="reciboModal" class="modal">
+
+        <div class="modal-content">
+                <span class="close">&times;</span>
+                <span class="print-icon" onclick="printRecibo()" style="cursor: pointer; float: right; font-size: 24px; margin-right: 10px;">🖨️</span> <!-- Ícone de impressão -->
+
+                <!-- Layout do recibo -->
+                <div class="recibo-container">
+                    <table class="recibo-header-table">
+                    <tr>
+                        <td class="recibo-header-left">
+                            <img src="https://i.ibb.co/Y768JNk/algazarra.jpg" alt="Algazarra Logo" width="120">
+                        </td>
+                        <td class="recibo-header-center">
+                            CNPJ 11.510.597/0001-30 <br>
+                            Praça Costa Pereira nº 52 - Edifício Michelini - sala 1104, <br>
+                            Centro de Vitória.
+                        </td>
+                        <td class="recibo-header-right">
+                            <img src="https://i.ibb.co/6w8N1kp/instituto-Todos-Cantos.jpg" alt="Instituto Todos os Cantos Logo" width="120">
+                        </td>
+                    </tr>
+                </table>
+
+                <table class="recibo-header-table">
+                    <tr>
+                        <td colspan="3" class="title" id="reciboTitle">Recibo de Entrega das Cestas Verde, contrapartida do Projeto "Algazarra Coral: formação vocal e responsabilidade social - ano 2024"</td>
+                    </tr>
+                </table>
+
+                <table class="recibo-header-table details-row">
+                    <tr>
+                        <td><span class="label">Data da entrega:</span><span id="reciboData">____/____/______</span></td>
+                        <td><span class="label">Mês de referência:</span><span id="mesReferencia">__________________</span></td>
+                        <td><span class="label" id="reciboLei">Lei de Incentivo à Cultura Capixaba (LICC)</span></td>
+                    </tr>
+                </table>
+
+                <table class="recibo-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 5%;">Nº</th>
+                            <th style="width: 40%;">NOME DO BENEFICIÁRIO</th>
+                            <th style="width: 35%;">ASSINATURA DO RESPONSÁVEL</th>
+                            <th style="width: 20%;">CPF DO RESPONSÁVEL</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Seleciona o modal
+        var modal = document.getElementById("reciboModal");
+
+        // Botão que abre o modal
+        var btn = document.querySelector(".open-modal-btn");
+
+        // Botão que fecha o modal
+        var span = document.querySelector(".close");
+
+        // Função para preencher a tabela dos beneficiários no modal
+        function preencherTabelaBeneficiarios(dados) {
+            console.log("Iniciando o preenchimento da tabela dos beneficiários...");
+            
+            var tabelaBody = document.querySelector(".recibo-table tbody");
+            tabelaBody.innerHTML = ""; // Limpa a tabela antes de preencher com novos dados
+
+            // Verifica se há dados a serem exibidos
+            if (dados.length === 0) {
+                console.log("Nenhum beneficiário encontrado para os filtros aplicados.");
+                var mensagem = document.createElement("tr");
+                var colunaMensagem = document.createElement("td");
+                colunaMensagem.colSpan = 4; // Abrange todas as colunas da tabela
+                colunaMensagem.textContent = "Não há alunos para o filtro informado.";
+                colunaMensagem.style.textAlign = "center";
+                mensagem.appendChild(colunaMensagem);
+                tabelaBody.appendChild(mensagem);
+            } else {
+                console.log("Número de beneficiários encontrados: " + dados.length);
+                // Popula a tabela com os dados recebidos do servidor
+                dados.forEach(function(beneficiario, index) {
+                    console.log("Preenchendo beneficiário: " + beneficiario.nome);
+                    var linha = document.createElement("tr");
+
+                    var colunaNum = document.createElement("td");
+                    colunaNum.textContent = index + 1; // Define a ordem dos beneficiários
+                    linha.appendChild(colunaNum);
+
+                    var colunaNome = document.createElement("td");
+                    colunaNome.textContent = beneficiario.nome; // Nome do beneficiário
+                    linha.appendChild(colunaNome);
+
+                    var colunaAssinatura = document.createElement("td");
+                    colunaAssinatura.textContent = ""; // Deixa assinatura vazia para preenchimento
+                    linha.appendChild(colunaAssinatura);
+
+                    var colunaCpf = document.createElement("td");
+                    colunaCpf.textContent = ""; // CPF pode ser deixado em branco ou preenchido posteriormente
+                    linha.appendChild(colunaCpf);
+
+                    tabelaBody.appendChild(linha);
+                });
+            }
+        }
+
+        // Função para buscar os dados dos beneficiários com base nos filtros selecionados
+        function buscarDadosBeneficiarios() {
+            console.log("Iniciando a busca de beneficiários...");
+            
+            var ativo = document.getElementById("ativo").checked;
+            var desistente = document.getElementById("desistente").checked;
+            var coralAlgazarra = document.getElementById("coralAlgazarra").checked;
+            var listaCestaVerde = document.getElementById("listaCestaVerde").value;
+
+            // Mapeamento dos valores de "Tipo de Cesta"
+            var tipoCestaMap = {
+                "Cesta Básica": "cestaBasica",
+                "Cesta Verde": "cestaVerde",
+                "Cesta Básica + Verde": "cestaBasicaVerde"
+            };
+
+            var tipoCesta = tipoCestaMap[listaCestaVerde] || "";
+
+            // Mostra os filtros aplicados no console
+            console.log("Filtros - Ativo: " + ativo + ", Desistente: " + desistente + ", Coral Algazarra: " + coralAlgazarra + ", Tipo de Cesta: " + tipoCesta);
+
+            // Corrigindo a ordem de encadeamento
+            google.script.run
+                .withSuccessHandler(preencherTabelaBeneficiarios)
+                .withFailureHandler(function(error) {
+                    console.error("Erro ao buscar beneficiários: " + error.message);
+                })
+                .buscarBeneficiariosFiltrados(ativo, desistente, coralAlgazarra, tipoCesta);
+        }
+
+        // Função para obter o nome do mês em português
+        function obterMesPtBr(mes) {
+            const meses = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
+            return meses[mes];
+        }
+
+        // Função para atualizar o conteúdo do modal com os inputs
+        function atualizarModal() {
+            var listaCestaVerde = document.getElementById("listaCestaVerde").value;
+            var tituloRecibo = `Recibo de Entrega das ${listaCestaVerde}, contrapartida do Projeto 'Algazarra Coral: formação vocal e responsabilidade social - ano ${new Date().getFullYear()}'`;
+            var leiIncentivo = document.getElementById("leiIncentivo").value;
+            var dataEntrega = document.getElementById("dataEntrega").value;
+
+            document.getElementById("tituloRecibo").value = tituloRecibo;
+            document.getElementById("reciboTitle").innerText = tituloRecibo;
+            document.getElementById("reciboLei").innerText = leiIncentivo;
+
+            if (dataEntrega) {
+                var data = new Date(dataEntrega);
+                var mesReferencia = `${obterMesPtBr(data.getMonth())}/${data.getFullYear()}`;
+                document.getElementById("reciboData").innerText = dataEntrega.split('-').reverse().join('/');
+                document.getElementById("mesReferencia").innerText = mesReferencia;
+            }
+        }
+
+        // Quando o usuário clicar no botão, abre o modal e atualiza com os dados
+        btn.onclick = function() {
+            console.log("Botão de abrir modal clicado.");
+            atualizarModal(); // Atualiza outros campos do modal
+            buscarDadosBeneficiarios(); // Faz a requisição dos beneficiários filtrados
+            modal.style.display = "block"; // Exibe o modal
+
+            // Definir a função printRecibo dentro do escopo de abertura do modal
+            function printRecibo() {
+                console.log("Iniciando a impressão do recibo...");
+
+                // Seleciona o conteúdo que você quer imprimir
+                var reciboContent = document.querySelector('.recibo-container').innerHTML;
+
+                // Abre uma nova janela (ou aba) para a impressão
+                var printWindow = window.open('', '', 'width=800,height=600');
+
+                // Define o conteúdo da nova janela (somente o conteúdo do recibo)
+                printWindow.document.write(`
+                    <html>
+                    <head>
+                        <title>Impressão do Recibo</title>
+                        <style>
+                            body {
+                                font-family: 'Roboto', sans-serif;
+                            }
+                            .recibo-table {
+                                width: 100%;
+                                border-collapse: collapse;
+                                margin-top: 10px;
+                            }
+                            .recibo-table th, .recibo-table td {
+                                border: 1px solid black;
+                                padding: 5px;
+                                text-align: left;
+                            }
+                            .recibo-header-table {
+                                width: 100%;
+                                border-collapse: collapse;
+                                border: 1px solid black;
+                            }
+                            .recibo-header-table td {
+                                padding: 5px;
+                                text-align: center;
+                                vertical-align: middle;
+                                font-size: 10px;
+                                border: 1px solid black;
+                            }
+                            .title {
+                                font-size: 14px;
+                                font-weight: bold;
+                                text-align: center;
+                            }
+                            .details-row td {
+                                font-size: 10px;
+                                border: 1px solid black;
+                            }
+                            @media print {
+                                @page {
+                                    size: A4;
+                                    margin: 3cm 2cm 2cm 3cm; /* Margens da página */
+                                }
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        ${reciboContent} <!-- Conteúdo do recibo -->
+                    </body>
+                    </html>
+                `);
+
+                // Espera o conteúdo ser carregado e depois imprime
+                printWindow.document.close(); // Necessário para terminar a escrita
+                printWindow.focus(); // Garante que a janela esteja em foco
+                printWindow.print(); // Chama a impressão da nova janela
+                printWindow.close(); // Fecha a janela após a impressão
+
+                console.log("Impressão concluída.");
+            }
+
+            // Agora, a função printRecibo estará disponível para o ícone de impressão
+            document.querySelector('.print-icon').onclick = printRecibo;
+        }
+
+        // Quando o usuário clicar no "x", fecha o modal
+        span.onclick = function() {
+            console.log("Botão para fechar modal clicado.");
+            modal.style.display = "none";
+        }
+
+        // Quando o usuário clicar fora do modal, fecha o modal
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                console.log("Modal fechado ao clicar fora dele.");
+                modal.style.display = "none";
+            }
+        }
+    </script>
+
+</body>
+</html>
