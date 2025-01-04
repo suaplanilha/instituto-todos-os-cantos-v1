@@ -9,7 +9,7 @@ function doGet(e) {
  // Adiciona os parâmetros de largura e altura desejados
  url += "?width=100%&height=100%";
  
- return HtmlService.createTemplateFromFile('index').evaluate()
+ return HtmlService.createTemplateFromFile('index1').evaluate()
    .setTitle('Controle de Alunos')
    .setSandboxMode(HtmlService.SandboxMode.IFRAME);
 }
